@@ -1,36 +1,113 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Kaarbi
 
-## Getting Started
+A modern web application built with Next.js 15, React 19, and TypeScript, featuring a robust authentication system and beautiful UI components.
 
-First, run the development server:
+## 🚀 Features
+
+- **Modern Tech Stack**: Built with Next.js 15 and React 19
+- **Type Safety**: Full TypeScript support
+- **Authentication**: Secure authentication system using better-auth
+- **UI Components**: Beautiful and accessible components using Radix UI
+- **Form Handling**: Advanced form management with React Hook Form and Zod validation
+- **Styling**: Modern styling with Tailwind CSS
+- **Animations**: Smooth animations powered by Framer Motion
+- **Database**: Prisma ORM for type-safe database operations
+- **Email Support**: Email functionality with Nodemailer
+- **Theme Support**: Dark/Light mode with next-themes 
+
+## 📦 Installation
+
+1. Clone the repository:
+```bash
+git clone https://github.com/Eyup-16/kaarbi.git
+cd kaarbi
+```
+
+2. Install dependencies:
+```bash
+npm install
+```
+
+3. Set up your environment variables:
+Create a `.env` file in the root directory and add your environment variables.
+
+4. Initialize the database:
+```bash
+npx prisma generate
+npx prisma db push
+```
+
+## 🛠️ Development
+
+Run the development server:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+The application will be available at `http://localhost:3000`.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 🏗️ Build
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+To create a production build:
 
-## Learn More
+```bash
+npm run build
+```
 
-To learn more about Next.js, take a look at the following resources:
+To start the production server:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```bash
+npm start
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## 🧪 Testing
 
-## Deploy on Vercel
+Run the linter:
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+```bash
+npm run lint
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## 📁 Project Structure
+
+```
+src/
+├── app/          # Next.js app directory
+├── components/   # Reusable UI components
+├── context/      # React context providers
+├── db/          # Database related code
+├── generated/   # Generated files
+├── hooks/       # Custom React hooks
+├── lib/         # Utility functions and configurations
+├── server/      # Server-side code
+├── stores/      # State management
+└── types/       # TypeScript type definitions
+```
+
+## 🛠️ Tech Stack
+
+- **Framework**: Next.js 15
+- **Language**: TypeScript
+- **UI Library**: React 19
+- **Styling**: Tailwind CSS
+- **Database ORM**: Prisma + PostgreSQL
+- **Form Handling**: React Hook Form + Zod
+- **UI Components**: ShadCN UI
+- **Animations**: Framer Motion + Gsap
+- **Email**: Nodemailer (for local development)
+- **Authentication**: better-auth
+
+## 🤝 Contributing
+
+Contributions, issues, and feature requests are welcome! Feel free to check the issues page.
+
+## 👥 Authors
+
+- Eyup - Initial work
+
+## 🙏 Acknowledgments
+
+- Next.js team for the amazing framework
+- Vercel for the hosting platform
+- All contributors who have helped shape this project
