@@ -1,5 +1,5 @@
 'use client'
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { ShieldCheck, ArrowRight, Building2, Check, Eye, EyeOff, Loader2 } from 'lucide-react';
 import { Alert, AlertDescription} from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
@@ -21,6 +21,7 @@ export default function ResetPasswordPage() {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [token, setToken] = useState<string | null>(null);
   const {
     register,
     handleSubmit,
@@ -32,9 +33,11 @@ export default function ResetPasswordPage() {
 
   const password = watch('password', '');
   // const confirmPassword = watch('confirmPassword', '');
-
-const searchParams = new URLSearchParams(window.location.search);
-const token = searchParams.get('token');
+useEffect(()=>{
+  const searchParams = new URLSearchParams(window.location.search);
+  const token = searchParams.get('token');
+  setToken(token);
+},[])
 
 
 
