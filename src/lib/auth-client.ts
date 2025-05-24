@@ -1,6 +1,16 @@
 import { createAuthClient } from "better-auth/react"
 import { toast } from "sonner"
 
+// Define error response interface
+interface ErrorResponse {
+  response?: {
+    status: number;
+    data?: {
+      message?: string;
+    };
+  };
+}
+
 // Define common error messages
 const ERROR_MESSAGES = {
   NETWORK_ERROR: "Network error. Please check your internet connection.",
@@ -13,7 +23,7 @@ const ERROR_MESSAGES = {
 } as const;
 
 // Helper function to get appropriate error message
-const getErrorMessage = (error: any): string => {
+const getErrorMessage = (error: ErrorResponse | null): string => {
   if (!error) return ERROR_MESSAGES.DEFAULT;
 
   // Network errors
@@ -43,7 +53,7 @@ const getErrorMessage = (error: any): string => {
 export const authClient = createAuthClient({
   /** The base URL of the server (optional if you're using the same domain) */
   baseURL: process.env.BETTER_AUTH_URL || '',
-  onError: (error:any) => {
+  onError: (error: ErrorResponse) => {
     // Log error for debugging
     console.error('Auth error:', error);
 
@@ -76,7 +86,7 @@ export const authClient = createAuthClient({
   onResponse: () => {
     // Hide loading state if needed
   },
-  onSuccess: (response:any) => {
+  onSuccess: (response: { message?: string }) => {
     // Handle successful responses
     if (response?.message) {
       toast.success(response.message, {

@@ -23,15 +23,15 @@ export const auth = betterAuth({
     },
     // Session configuration
     session:{
-    expiresIn:60*5, // 5 minutes
-    updateAge:60*5, // 5 minutes
-    cookieCacheTime:60*5, // 5 minutes
+    expiresIn:60*60*24*30, // 30 days
+    updateAge:60*60*24, // 24 hours
+    cookieCacheTime:60*60*24, // 24 hours
     },
     
     emailVerification:{
         sendOnSignUp:true, // Send verification email on sign up
         autoSignInAfterVerification:true, // Auto sign in the user after they verify their email
-        expiresIn:60*2, // 2 minutes
+        expiresIn:60*5, // 5 hours
         sendVerificationEmail:async ({user,token})=> {
             const verificationUrl = `${process.env.BETTER_AUTH_URL}/api/auth/verify-email?token=${token}&callbackURL=${process.env.EMAIL_VERIFICATION_CALLBACK_URL}`;
             await sendEmail({
@@ -62,7 +62,7 @@ export const auth = betterAuth({
             clientId: process.env.APPLE_CLIENT_ID as string, 
             clientSecret: process.env.APPLE_CLIENT_SECRET as string, 
             appBundleIdentifier: process.env.APPLE_APP_BUNDLE_IDENTIFIER as string, 
-        } 
+        }   
     },
     trustedOrigins: ["https://appleid.apple.com"],
 });
