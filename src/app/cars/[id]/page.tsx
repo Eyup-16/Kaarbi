@@ -7,11 +7,10 @@ export const metadata: Metadata = {
 };
 
 interface PageProps {
-  params: {
-    id: string;
-  };
+  params: Promise<{ id: string }>;
 }
 
-export default function CarDetailsPage({ params }: PageProps) {
-  return <CarDetails id={params.id} />;
+export default async function CarDetailsPage({ params }: PageProps) {
+  const resolvedParams = await params;
+  return <CarDetails id={resolvedParams.id} />;
 }
