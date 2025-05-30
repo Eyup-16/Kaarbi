@@ -2,14 +2,35 @@
 
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { Search, Menu, X } from "lucide-react";
+import { Search, Menu, X, LogOut } from "lucide-react";
 import { useState } from "react";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
+import { signOut } from "@/lib/auth-client";
+import { toast } from "sonner";
+import { useSession } from "@/lib/auth-client";
 
 export function Navbar() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isSignOut, setIsSignOut] = useState(false)
+  const router = useRouter()
+  const { data: session } = useSession()
+  
   const pathname = usePathname();
-
+  const handleSignOut = async () => {
+    try{
+      setIsSignOut(true)
+      await signOut()
+      toast.success(`Signed out successfully!`)
+      router.push('/login')
+    }
+    catch(error){
+      setIsSignOut(false)
+      toast.error(error+'signed out failed!')
+    }
+    finally {
+      setIsSignOut(false)
+    }
+  }
   const isActive = (path: string) => pathname === path;
 
   return (
@@ -30,7 +51,7 @@ export function Navbar() {
                 Browse Cars
               </Link>
               <Link 
-                href="/seller" 
+                href="/sell" 
                 className={`text-sm font-medium transition-colors hover:text-primary ${
                   isActive("/seller") ? "text-primary" : "text-gray-600"
                 }`}
@@ -53,12 +74,29 @@ export function Navbar() {
               <Search className="h-5 w-5" />
             </Button>
             <div className="hidden md:flex items-center gap-4">
-              <Button variant="outline" asChild>
-                <Link href="/login">Sign In</Link>
-              </Button>
-              <Button asChild>
-                <Link href="/signup">Get Started</Link>
-              </Button>
+              {session ? (
+                <Button className=' cursor-pointer right-0 w-36 bg-white text-black'
+                    variant={'outline'}
+                    onClick={handleSignOut}
+                    disabled={isSignOut}>
+                      {isSignOut ? 
+                        <>
+                          <LogOut className='mr-2 h-4 w-4' />Signing Out...</>
+                        : 
+                        <><LogOut className='mr-2 h-4 w-4' />Sign Out</>
+                        }
+                        
+                </Button>
+              ) : (
+                <>
+                  <Button variant="outline" asChild>
+                    <Link href="/login">Sign In</Link>
+                  </Button>
+                  <Button asChild>
+                    <Link href="/signup">Get Started</Link>
+                  </Button>
+                </>
+              )}
             </div>
             <Button
               variant="ghost"
@@ -108,16 +146,33 @@ export function Navbar() {
               About
             </Link>
             <div className="pt-4 space-y-2">
-              <Button variant="outline" className="w-full" asChild>
-                <Link href="/login" onClick={() => setIsMobileMenuOpen(false)}>
-                  Sign In
-                </Link>
-              </Button>
-              <Button className="w-full" asChild>
-                <Link href="/signup" onClick={() => setIsMobileMenuOpen(false)}>
-                  Get Started
-                </Link>
-              </Button>
+              {session ? (
+                <Button 
+                  variant="destructive" 
+                  className="w-full flex items-center justify-center gap-2"
+                  onClick={() => {
+                    handleSignOut()
+                    setIsMobileMenuOpen(false)
+                  }}
+                  disabled={isSignOut}
+                >
+                  <LogOut className="h-4 w-4" />
+                  Sign Out
+                </Button>
+              ) : (
+                <>
+                  <Button variant="outline" className="w-full" asChild>
+                    <Link href="/login" onClick={() => setIsMobileMenuOpen(false)}>
+                      Sign In
+                    </Link>
+                  </Button>
+                  <Button className="w-full" asChild>
+                    <Link href="/signup" onClick={() => setIsMobileMenuOpen(false)}>
+                      Get Started
+                    </Link>
+                  </Button>
+                </>
+              )}
             </div>
           </div>
         </div>
