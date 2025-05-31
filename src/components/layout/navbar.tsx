@@ -2,12 +2,13 @@
 
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { Search, Menu, X, LogOut } from "lucide-react";
+import { Search, Menu, X, LogOut, User } from "lucide-react";
 import { useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { signOut } from "@/lib/auth-client";
 import { toast } from "sonner";
 import { useSession } from "@/lib/auth-client";
+import Image from "next/image";
 
 export function Navbar() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -32,6 +33,9 @@ export function Navbar() {
     }
   }
   const isActive = (path: string) => pathname === path;
+
+  // Get first name from full name
+  const firstName = session?.user?.name?.split(' ')[0] || '';
 
   return (
     <nav className="sticky top-0 z-50 w-full border-b bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/60">
@@ -75,18 +79,42 @@ export function Navbar() {
             </Button>
             <div className="hidden md:flex items-center gap-4">
               {session ? (
-                <Button className=' cursor-pointer right-0 w-36 bg-white text-black'
+                <div className="flex items-center gap-4">
+                  <div className="flex items-center gap-2">
+                    {session.user?.image ? (
+                      <Image
+                        src={session.user.image}
+                        alt={session.user.name || 'User avatar'}
+                        width={32}
+                        height={32}
+                        className="rounded-full"
+                      />
+                    ) : (
+                      <div className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center">
+                        <User className="w-5 h-5 text-gray-500" />
+                      </div>
+                    )}
+                    <span className="text-sm font-medium text-gray-700">
+                      Hi, {firstName}
+                    </span>
+                  </div>
+                  <Button 
+                    className='cursor-pointer right-0 w-36 bg-white text-black'
                     variant={'outline'}
                     onClick={handleSignOut}
-                    disabled={isSignOut}>
-                      {isSignOut ? 
-                        <>
-                          <LogOut className='mr-2 h-4 w-4' />Signing Out...</>
-                        : 
-                        <><LogOut className='mr-2 h-4 w-4' />Sign Out</>
-                        }
-                        
-                </Button>
+                    disabled={isSignOut}
+                  >
+                    {isSignOut ? (
+                      <>
+                        <LogOut className='mr-2 h-4 w-4' />Signing Out...
+                      </>
+                    ) : (
+                      <>
+                        <LogOut className='mr-2 h-4 w-4' />Sign Out
+                      </>
+                    )}
+                  </Button>
+                </div>
               ) : (
                 <>
                   <Button variant="outline" asChild>
@@ -118,6 +146,26 @@ export function Navbar() {
       {isMobileMenuOpen && (
         <div className="md:hidden border-t">
           <div className="container mx-auto px-4 py-4 space-y-4">
+            {session && (
+              <div className="flex items-center gap-2 pb-4 border-b">
+                {session.user?.image ? (
+                  <Image
+                    src={session.user.image}
+                    alt={session.user.name || 'User avatar'}
+                    width={32}
+                    height={32}
+                    className="rounded-full"
+                  />
+                ) : (
+                  <div className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center">
+                    <User className="w-5 h-5 text-gray-500" />
+                  </div>
+                )}
+                <span className="text-sm font-medium text-gray-700">
+                  Hi, {firstName}
+                </span>
+              </div>
+            )}
             <Link 
               href="/cars" 
               className={`block text-sm font-medium transition-colors hover:text-primary ${
@@ -128,7 +176,7 @@ export function Navbar() {
               Browse Cars
             </Link>
             <Link 
-              href="/seller" 
+              href="/sell" 
               className={`block text-sm font-medium transition-colors hover:text-primary ${
                 isActive("/seller") ? "text-primary" : "text-gray-600"
               }`}
