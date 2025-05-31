@@ -11,6 +11,17 @@ import { signOut } from "@/lib/auth-client";
 import { AlertCircle, Edit2, Save, Trash2, X, Mail, User, Link2, Unlink, Phone, Building2, Globe, MapPin, FileText } from "lucide-react";
 import { toast } from "sonner";
 import { Textarea } from "@/components/ui/textarea";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 interface ConnectedAccount {
   id: string;
@@ -133,10 +144,6 @@ export default function Profile() {
   };
 
   const handleDeleteAccount = async () => {
-    if (!window.confirm("Are you sure you want to delete your account? This action cannot be undone.")) {
-      return;
-    }
-
     try {
       const response = await fetch("/api/user/delete", {
         method: "DELETE",
@@ -405,10 +412,37 @@ export default function Profile() {
             This action cannot be undone. This will permanently delete your account and remove all your data from our servers.
           </AlertDescription>
         </Alert>
-        <Button variant="destructive" onClick={handleDeleteAccount}>
-          <Trash2 className="w-4 h-4 mr-2" />
-          Delete Account
-        </Button>
+        <AlertDialog>
+          <AlertDialogTrigger asChild>
+            <Button 
+              variant="destructive" 
+              className="bg-red-600 hover:bg-red-700 focus-visible:ring-red-500"
+            >
+              <Trash2 className="w-4 h-4 mr-2" />
+              Delete Account
+            </Button>
+          </AlertDialogTrigger>
+          <AlertDialogContent className="sm:max-w-[425px]">
+            <AlertDialogHeader>
+              <AlertDialogTitle className="text-red-600">Are you absolutely sure?</AlertDialogTitle>
+              <AlertDialogDescription className="text-gray-600">
+                This action cannot be undone. This will permanently delete your account
+                and remove all your data from our servers. Please be certain before proceeding.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel className="border-gray-300 hover:bg-gray-100">
+                Cancel
+              </AlertDialogCancel>
+              <AlertDialogAction 
+                onClick={handleDeleteAccount}
+                className="bg-red-600 hover:bg-red-700 focus-visible:ring-red-500"
+              >
+                Yes, delete my account
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
       </Card>
     </div>
   );

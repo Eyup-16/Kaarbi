@@ -2,10 +2,13 @@
 
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Car, Shield, TrendingUp, Users } from "lucide-react";
+import { ArrowRight, Car, Shield, TrendingUp, Users, Search } from "lucide-react";
 import Image from "next/image";
+import { useSession } from "@/lib/auth-client";
 
 export default function HomePage() {
+  const { data: session } = useSession();
+
   return (
     <div className="flex flex-col">
       {/* Hero Section */}
@@ -96,18 +99,37 @@ export default function HomePage() {
       {/* CTA Section */}
       <section className="bg-primary py-20">
         <div className="container mx-auto px-4 text-center">
-          <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
-            Ready to Find Your Dream Car?
-          </h2>
-          <p className="text-white/80 max-w-2xl mx-auto mb-8">
-            Join thousands of satisfied customers who found their perfect car on Kaarbi.
-          </p>
-          <Button size="lg" variant="secondary" asChild>
-            <Link href="/signup">
-              Get Started
-              <ArrowRight className="ml-2 h-5 w-5" />
-            </Link>
-          </Button>
+          {session ? (
+            <>
+              <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
+                Start Your Car Search
+              </h2>
+              <p className="text-white/80 max-w-2xl mx-auto mb-8">
+                Browse through our extensive collection of cars and find your perfect match.
+              </p>
+              <Button size="lg" variant="secondary" asChild>
+                <Link href="/cars">
+                  Browse Cars
+                  <Search className="ml-2 h-5 w-5" />
+                </Link>
+              </Button>
+            </>
+          ) : (
+            <>
+              <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
+                Ready to Find Your Dream Car?
+              </h2>
+              <p className="text-white/80 max-w-2xl mx-auto mb-8">
+                Join thousands of satisfied customers who found their perfect car on Kaarbi.
+              </p>
+              <Button size="lg" variant="secondary" asChild>
+                <Link href="/signup">
+                  Get Started
+                  <ArrowRight className="ml-2 h-5 w-5" />
+                </Link>
+              </Button>
+            </>
+          )}
         </div>
       </section>
     </div>
