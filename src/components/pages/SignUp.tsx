@@ -1,24 +1,33 @@
-"use client";
+"use client"
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Image from "next/image";
 import { Loader2, X, Lock, ArrowRight, Building2 } from "lucide-react";
-import { signUp } from "@/lib/auth-client";
+import { signUp, useSession } from "@/lib/auth-client";
 import { toast } from "sonner";
 import Link from "next/link";
 import { signupSchema } from "@/lib/Schemas/SignupSchema";
 import { useForm } from "react-hook-form";
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from "zod";
+import { useRouter } from "next/navigation";
 
 export default function SignUp() {
 	const [image, setImage] = useState<File | null>(null);
 	const [imagePreview, setImagePreview] = useState<string | null>(null);
 	const [loading, setLoading] = useState(false);
+	const { data: session, isPending } = useSession();
+	const router = useRouter();
+
+	useEffect(() => {
+		if (!isPending && session) {
+			router.push('/dashboard');
+		}
+	}, [session, isPending, router]);
 
 	const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		const file = e.target.files?.[0];
@@ -170,8 +179,9 @@ export default function SignUp() {
 											<Image
 												src={imagePreview}
 												alt="Profile preview"
-												layout="fill"
-												objectFit="cover"
+												width={48}
+												height={48}
+												className="object-cover"
 											/>
 										</div>
 									)}

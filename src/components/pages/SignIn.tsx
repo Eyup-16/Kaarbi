@@ -4,9 +4,9 @@ import { Card, CardContent, CardHeader, CardFooter } from "@/components/ui/card"
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Loader2, Lock, ArrowRight, Building2 } from "lucide-react";
-import { signIn } from "@/lib/auth-client";
+import { signIn, useSession } from "@/lib/auth-client";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { loginSchema } from "@/lib/Schemas/LoginSchema";
@@ -14,10 +14,19 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 export default function SignIn() {
   const [loading, setLoading] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
+  const { data: session, isPending } = useSession();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (!isPending && session) {
+      router.push('/dashboard');
+    }
+  }, [session, isPending, router]);
 
   const {
     register,
