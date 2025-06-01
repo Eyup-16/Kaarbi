@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -22,10 +22,22 @@ import {
   Share2,
   Star,
   ChevronLeft,
-  ChevronRight,
-  Check
+  ChevronRight
 } from "lucide-react";
 import { notFound } from "next/navigation";
+
+interface Car {
+  id: string;
+  title: string;
+  price: number;
+  year: number;
+  mileage: number;
+  location: string;
+  imageUrl: string;
+  condition: "new" | "used";
+  make: string;
+  model: string;
+}
 
 // Mock data - replace with actual API call
 const mockCars = [
@@ -139,11 +151,10 @@ interface CarDetailsProps {
 }
 
 export default function CarDetails({ id }: CarDetailsProps) {
-  const { data: session, isPending } = useSession();
+  const { data: session } = useSession();
   const router = useRouter();
   const [selectedImage, setSelectedImage] = useState(0);
   const [isFavorite, setIsFavorite] = useState(false);
-  const [scrollPosition, setScrollPosition] = useState(0);
   const [isSharing, setIsSharing] = useState(false);
   const thumbnailContainerRef = useRef<HTMLDivElement>(null);
 
@@ -165,7 +176,6 @@ export default function CarDetails({ id }: CarDetailsProps) {
         left: newPosition,
         behavior: 'smooth'
       });
-      setScrollPosition(newPosition);
     }
   };
 
@@ -196,14 +206,71 @@ export default function CarDetails({ id }: CarDetailsProps) {
     scrollThumbnailIntoView(index);
   };
 
-  const handleFavorite = () => {
+  const handleFavorite = async () => {
     if (!session) {
       router.push('/login');
       return;
     }
-    setIsFavorite(!isFavorite);
-    // TODO: Implement favorite functionality with API
+
+    try {
+      if (isFavorite) {
+        // Remove from favorites
+        const response = await fetch(`/api/favorites/${id}`, {
+          method: 'DELETE',
+        });
+
+        if (!response.ok) {
+          const errorData = await response.json().catch(() => ({}));
+          throw new Error(errorData.error || 'Failed to remove from favorites');
+        }
+        
+        setIsFavorite(false);
+        toast.success("Removed from favorites");
+      } else {
+        // Add to favorites
+        const response = await fetch('/api/favorites', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            carId: id,
+            ...carData
+          }),
+        });
+
+        if (!response.ok) {
+          const errorData = await response.json().catch(() => ({}));
+          throw new Error(errorData.error || 'Failed to add to favorites');
+        }
+        
+        setIsFavorite(true);
+        toast.success("Added to favorites");
+      }
+    } catch (error) {
+      console.error('Error toggling favorite:', error);
+      toast.error(error instanceof Error ? error.message : "Failed to update favorites");
+    }
   };
+
+  // Add useEffect to check if car is in favorites
+  useEffect(() => {
+    const checkFavoriteStatus = async () => {
+      if (!session) return;
+
+      try {
+        const response = await fetch('/api/favorites');
+        if (!response.ok) throw new Error('Failed to fetch favorites');
+        
+        const favorites = await response.json();
+        setIsFavorite(favorites.some((car: Car) => car.id === id));
+      } catch (error) {
+        console.error('Error checking favorite status:', error);
+      }
+    };
+
+    checkFavoriteStatus();
+  }, [session, id]);
 
   const handleContact = () => {
     if (!session) {
