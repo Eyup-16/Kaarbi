@@ -2,13 +2,21 @@
 
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { Search, Menu, X, LogOut, User } from "lucide-react";
+import { Search, Menu, X, LogOut, User, Heart, Settings, Car } from "lucide-react";
 import { useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { signOut } from "@/lib/auth-client";
 import { toast } from "sonner";
 import { useSession } from "@/lib/auth-client";
 import Image from "next/image";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 export function Navbar() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -80,40 +88,72 @@ export function Navbar() {
             <div className="hidden md:flex items-center gap-4">
               {session ? (
                 <div className="flex items-center gap-4">
-                  <div className="flex items-center gap-2">
-                    {session.user?.image ? (
-                      <Image
-                        src={session.user.image}
-                        alt={session.user.name || 'User avatar'}
-                        width={32}
-                        height={32}
-                        className="rounded-full"
-                      />
-                    ) : (
-                      <div className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center">
-                        <User className="w-5 h-5 text-gray-500" />
-                      </div>
-                    )}
-                    <span className="text-sm font-medium text-gray-700">
-                      Hi, {firstName}
-                    </span>
-                  </div>
-                  <Button 
-                    className='cursor-pointer right-0 w-36 bg-white text-black'
-                    variant={'outline'}
-                    onClick={handleSignOut}
-                    disabled={isSignOut}
-                  >
-                    {isSignOut ? (
-                      <>
-                        <LogOut className='mr-2 h-4 w-4' />Signing Out...
-                      </>
-                    ) : (
-                      <>
-                        <LogOut className='mr-2 h-4 w-4' />Sign Out
-                      </>
-                    )}
-                  </Button>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button 
+                        variant="ghost" 
+                        className="relative h-8 w-8 rounded-full p-0 hover:bg-gray-100"
+                      >
+                        {session.user?.image ? (
+                          <Image
+                            src={session.user.image}
+                            alt={session.user.name || 'User avatar'}
+                            width={32}
+                            height={32}
+                            className="rounded-full"
+                          />
+                        ) : (
+                          <div className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center">
+                            <User className="w-5 h-5 text-gray-500" />
+                          </div>
+                        )}
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent className="w-56" align="end" forceMount>
+                      <DropdownMenuLabel className="font-normal">
+                        <div className="flex flex-col space-y-1">
+                          <p className="text-sm font-medium leading-none">{session.user?.name}</p>
+                          <p className="text-xs leading-none text-muted-foreground">
+                            {session.user?.email}
+                          </p>
+                        </div>
+                      </DropdownMenuLabel>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem asChild>
+                        <Link href="/profile" className="cursor-pointer">
+                          <User className="mr-2 h-4 w-4" />
+                          <span>Profile</span>
+                        </Link>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem asChild>
+                        <Link href="/favorites" className="cursor-pointer">
+                          <Heart className="mr-2 h-4 w-4" />
+                          <span>Favorite Cars</span>
+                        </Link>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem asChild>
+                        <Link href="/my-cars" className="cursor-pointer">
+                          <Car className="mr-2 h-4 w-4" />
+                          <span>My Cars</span>
+                        </Link>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem asChild>
+                        <Link href="/settings" className="cursor-pointer">
+                          <Settings className="mr-2 h-4 w-4" />
+                          <span>Settings</span>
+                        </Link>
+                      </DropdownMenuItem>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem
+                        className="cursor-pointer text-red-600 focus:text-red-600"
+                        onClick={handleSignOut}
+                        disabled={isSignOut}
+                      >
+                        <LogOut className="mr-2 h-4 w-4" />
+                        <span>{isSignOut ? "Signing out..." : "Sign out"}</span>
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
                 </div>
               ) : (
                 <>
@@ -193,6 +233,38 @@ export function Navbar() {
             >
               About
             </Link>
+            {session && (
+              <>
+                <Link 
+                  href="/profile" 
+                  className="block text-sm font-medium text-gray-600 hover:text-primary"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  Profile
+                </Link>
+                <Link 
+                  href="/favorites" 
+                  className="block text-sm font-medium text-gray-600 hover:text-primary"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  Favorite Cars
+                </Link>
+                <Link 
+                  href="/my-cars" 
+                  className="block text-sm font-medium text-gray-600 hover:text-primary"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  My Cars
+                </Link>
+                <Link 
+                  href="/settings" 
+                  className="block text-sm font-medium text-gray-600 hover:text-primary"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  Settings
+                </Link>
+              </>
+            )}
             <div className="pt-4 space-y-2">
               {session ? (
                 <Button 

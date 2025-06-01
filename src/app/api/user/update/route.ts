@@ -13,7 +13,7 @@ export async function PUT(request: Request) {
     }
 
     const body = await request.json();
-    const { name, phone, company, bio, location, website } = body;
+    const { name, phone, company, bio, location, website, image } = body;
 
     if (!name) {
       return new NextResponse("Name is required", { status: 400 });
@@ -25,6 +25,7 @@ export async function PUT(request: Request) {
       },
       data: {
         name,
+        image: image || null,
         phone: phone || null,
         company: company || null,
         bio: bio || null,
