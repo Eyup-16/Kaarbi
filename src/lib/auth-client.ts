@@ -1,5 +1,7 @@
 import { createAuthClient } from "better-auth/react"
 import { toast } from "sonner"
+import { adminClient } from "better-auth/client/plugins"
+import { ac, adminRole, moderatorRole, userRole } from "./auth"
 
 // Define error response interface
 interface ErrorResponse {
@@ -53,6 +55,16 @@ const getErrorMessage = (error: ErrorResponse | null): string => {
 export const authClient = createAuthClient({
   /** The base URL of the server (optional if you're using the same domain) */
   baseURL: process.env.BETTER_AUTH_URL || '',
+  plugins: [
+    adminClient({
+      ac,
+      roles: {
+        admin: adminRole,
+        moderator: moderatorRole,
+        user: userRole
+      }
+    })
+  ],
   onError: (error: ErrorResponse) => {
     // Log error for debugging
     console.error('Auth error:', error);

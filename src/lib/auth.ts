@@ -4,7 +4,37 @@ import { prismaAdapter } from "better-auth/adapters/prisma";
 import { PrismaClient } from "@/generated/prisma";
 import { sendEmail } from "./email"; 
 import { nextCookies } from "better-auth/next-js";
+import { admin } from "better-auth/plugins";
+import { createAccessControl } from "better-auth/plugins/access";
+
 const prisma = new PrismaClient();
+
+// Define our custom permissions
+const statement = {
+  user: ["create", "list", "set-role", "ban", "impersonate", "delete", "set-password"],
+  session: ["list", "revoke", "delete"],
+  car: ["approve", "delete", "list-all", "ban-listing"]
+} as const;
+
+// Create access control
+export const ac = createAccessControl(statement);
+
+// Define roles with permissions
+export const adminRole = ac.newRole({
+  user: ["create", "list", "set-role", "ban", "impersonate", "delete", "set-password"],
+  session: ["list", "revoke", "delete"],
+  car: ["approve", "delete", "list-all", "ban-listing"]
+});
+
+export const moderatorRole = ac.newRole({
+  user: ["list"],
+  session: ["list"],
+  car: ["approve", "list-all"]
+});
+
+export const userRole = ac.newRole({
+  car: ["list-all"]
+});
 
 export const auth = betterAuth({
     database: prismaAdapter(prisma, {
@@ -44,7 +74,22 @@ export const auth = betterAuth({
     },
     
 
-    plugins:[nextCookies()],
+    plugins:[
+        nextCookies(),
+        admin({
+            ac,
+            roles: {
+                admin: adminRole,
+                moderator: moderatorRole,
+                user: userRole
+            },
+            defaultRole: "user",
+            adminRoles: ["admin", "moderator"],
+            impersonationSessionDuration: 60 * 60, // 1 hour
+            defaultBanReason: "Violation of terms of service",
+            bannedUserMessage: "Your account has been banned. Please contact support if you believe this is an error."
+        })
+    ],
     socialProviders: {
 
         google: {
