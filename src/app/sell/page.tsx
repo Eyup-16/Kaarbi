@@ -10,14 +10,12 @@ export const metadata: Metadata = {
   description: "List your car for sale on Kaarbi. Fill out our simple form to get started.",
 };
 
-const SellPage = async () => {
-  const session = await auth.api.getSession({headers: await headers()})
-  if(!session){
-    redirect('/login')
+export default async function SellPage() {
+  const session = await auth.api.getSession({ headers: await headers() });
+  
+  if (!session) {
+    redirect('/login');
   }
-  return (
-    <Sell/>
-  )
-}
 
-export default SellPage 
+  return <Sell />;
+} 
