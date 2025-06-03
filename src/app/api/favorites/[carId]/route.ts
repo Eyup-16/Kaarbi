@@ -5,7 +5,7 @@ import prisma from "@/lib/prisma";
 
 export async function DELETE(
   request: Request,
-  { params }: { params: { carId: string } }
+  { params }: { params: Promise<{ carId: string }> }
 ) {
   try {
     const session = await auth.api.getSession({ headers: await headers() });
@@ -13,7 +13,7 @@ export async function DELETE(
       return new NextResponse("Unauthorized", { status: 401 });
     }
 
-    const { carId } = params;
+    const { carId } = await params;
     if (!carId) {
       return new NextResponse("Car ID is required", { status: 400 });
     }
@@ -42,4 +42,4 @@ export async function DELETE(
     console.error("Error removing from favorites:", error);
     return new NextResponse("Internal Server Error", { status: 500 });
   }
-} 
+}

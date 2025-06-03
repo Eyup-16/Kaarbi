@@ -20,11 +20,13 @@ model User {
   bio           String?   @db.Text
   location      String?
   website       String?
+  password      String?
   createdAt     DateTime
   updatedAt     DateTime
   sessions      Session[]
   accounts      Account[]
   favorites     Favorite[]
+  cars          Car[]
 
   @@unique([email])
   @@map("user")
@@ -88,6 +90,12 @@ model Favorite {
   @@map("favorite")
 }
 
+enum CarStatus {
+  PENDING
+  ACTIVE
+  SOLD
+}
+
 model Car {
   id          String     @id @default(cuid())
   title       String
@@ -99,9 +107,12 @@ model Car {
   condition   String
   make        String
   model       String
+  status      CarStatus  @default(PENDING)
   createdAt   DateTime   @default(now())
   updatedAt   DateTime   @updatedAt
   favorites   Favorite[]
+  userId      String?    // Make this optional temporarily
+  user        User?      @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("car")
 }

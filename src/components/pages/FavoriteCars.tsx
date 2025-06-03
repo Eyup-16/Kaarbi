@@ -31,12 +31,14 @@ export function FavoriteCars() {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    if (!session) {
+    if (!isPending && !session) {
       router.push('/login');
       return;
     }
-    fetchFavoriteCars();
-  }, [session, router]);
+    if (session) {
+      fetchFavoriteCars();
+    }
+  }, [session, isPending, router]);
 
   const fetchFavoriteCars = async () => {
     try {

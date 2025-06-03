@@ -61,7 +61,8 @@ export async function POST(request: Request) {
             imageUrl: carData.imageUrl || "",
             condition: carData.condition || "used",
             make: carData.make || "Unknown",
-            model: carData.model || "Unknown"
+            model: carData.model || "Unknown",
+            userId: session.user.id
           }
         });
         console.log("Created new car:", car);
