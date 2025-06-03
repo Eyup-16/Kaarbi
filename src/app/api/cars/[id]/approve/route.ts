@@ -5,9 +5,12 @@ import { headers } from 'next/headers';
 
 export async function PATCH(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    // Await the params Promise
+    const { id } = await params;
+    
     const session = await auth.api.getSession({ headers: await headers() });
     if (!session) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
@@ -27,7 +30,7 @@ export async function PATCH(
     }
 
     const car = await prisma.car.update({
-      where: { id: params.id },
+      where: { id }, // Use the awaited id
       data: { status: 'ACTIVE' }
     });
 
@@ -39,4 +42,4 @@ export async function PATCH(
       { status: 500 }
     );
   }
-} 
+}

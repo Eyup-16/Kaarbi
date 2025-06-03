@@ -5,7 +5,7 @@ import { headers } from 'next/headers';
 
 export async function PATCH(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await auth.api.getSession({ headers: await headers() });
@@ -20,7 +20,7 @@ export async function PATCH(
 
     // Check if the car belongs to the user
     const car = await prisma.car.findUnique({
-      where: { id: params.id },
+      where: { id:(await params).id },
       select: { userId: true }
     });
 
@@ -30,7 +30,7 @@ export async function PATCH(
 
     // Update the car status
     const updatedCar = await prisma.car.update({
-      where: { id: params.id },
+      where: { id: (await params).id },
       data: { status },
     });
 
