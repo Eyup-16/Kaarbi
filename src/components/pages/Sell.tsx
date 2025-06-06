@@ -96,6 +96,8 @@ export default function Sell() {
     horsepower: "",
     torque: "",
     drivetrain: "",
+    mpgCity: "",
+    mpgHighway: "",
     features: [] as string[],
     location: "",
   });
@@ -304,6 +306,19 @@ export default function Sell() {
         imageUrl,
         condition: formData.condition,
         status: "PENDING", // Set initial status as pending
+        // Additional specifications
+        trim: formData.trim,
+        color: formData.color,
+        engine: formData.engine,
+        transmission: formData.transmission,
+        fuelType: formData.fuelType,
+        drivetrain: formData.drivetrain,
+        horsepower: formData.horsepower,
+        torque: formData.torque,
+        mpgCity: formData.mpgCity,
+        mpgHighway: formData.mpgHighway,
+        features: formData.features,
+        description: formData.description,
       };
 
       const response = await fetch('/api/cars', {
@@ -807,6 +822,33 @@ export default function Sell() {
                         setFormData(prev => ({ ...prev, torque: e.target.value }))
                       }
                       placeholder="e.g., 184 lb-ft"
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="mpgCity">City MPG</Label>
+                    <Input
+                      id="mpgCity"
+                      type="number"
+                      value={formData.mpgCity}
+                      onChange={(e) =>
+                        setFormData(prev => ({ ...prev, mpgCity: e.target.value }))
+                      }
+                      placeholder="e.g., 25"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="mpgHighway">Highway MPG</Label>
+                    <Input
+                      id="mpgHighway"
+                      type="number"
+                      value={formData.mpgHighway}
+                      onChange={(e) =>
+                        setFormData(prev => ({ ...prev, mpgHighway: e.target.value }))
+                      }
+                      placeholder="e.g., 35"
                     />
                   </div>
                 </div>

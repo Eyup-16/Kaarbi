@@ -34,7 +34,30 @@ export async function POST(request: Request) {
     }
 
     const body = await request.json();
-    const { title, price, year, mileage, location, imageUrl, condition, make, model } = body;
+    const { 
+      title, 
+      price, 
+      year, 
+      mileage, 
+      location, 
+      imageUrl, 
+      condition, 
+      make, 
+      model,
+      // Additional specifications
+      trim,
+      color,
+      engine,
+      transmission,
+      fuelType,
+      drivetrain,
+      horsepower,
+      torque,
+      mpgCity,
+      mpgHighway,
+      features,
+      description
+    } = body;
 
     const car = await prisma.car.create({
       data: {
@@ -47,6 +70,19 @@ export async function POST(request: Request) {
         condition,
         make,
         model,
+        // Additional specifications
+        trim: trim || null,
+        color: color || null,
+        engine: engine || null,
+        transmission: transmission || null,
+        fuelType: fuelType || null,
+        drivetrain: drivetrain || null,
+        horsepower: horsepower || null,
+        torque: torque || null,
+        mpgCity: mpgCity ? parseInt(mpgCity) : null,
+        mpgHighway: mpgHighway ? parseInt(mpgHighway) : null,
+        features: features || [],
+        description: description || null,
         userId: session.user.id
       }
     });

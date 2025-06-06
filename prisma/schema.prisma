@@ -108,6 +108,21 @@ model Car {
   make        String
   model       String
   status      CarStatus  @default(PENDING)
+  
+  // Additional specifications
+  trim        String?
+  color       String?
+  engine      String?
+  transmission String?
+  fuelType    String?
+  drivetrain  String?
+  horsepower  String?
+  torque      String?
+  mpgCity     Int?
+  mpgHighway  Int?
+  features    String[]   @default([])
+  description String?    @db.Text
+  
   createdAt   DateTime   @default(now())
   updatedAt   DateTime   @updatedAt
   favorites   Favorite[]

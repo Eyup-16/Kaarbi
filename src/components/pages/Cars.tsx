@@ -8,7 +8,7 @@ import {Select,SelectContent,SelectItem,SelectTrigger,SelectValue,} from "@/comp
 import { Slider } from "@/components/ui/slider";
 import Image from "next/image";
 import Link from "next/link";
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 
 interface Car {
   id: string;
@@ -18,9 +18,35 @@ interface Car {
   mileage: number;
   location: string;
   imageUrl: string;
-  condition: "new" | "used";
+  condition: string;
   make: string;
   model: string;
+  status: string;
+  
+  // Additional specifications
+  trim?: string | null;
+  color?: string | null;
+  engine?: string | null;
+  transmission?: string | null;
+  fuelType?: string | null;
+  drivetrain?: string | null;
+  horsepower?: string | null;
+  torque?: string | null;
+  mpgCity?: number | null;
+  mpgHighway?: number | null;
+  features?: string[];
+  description?: string | null;
+  
+  createdAt: string;
+  updatedAt: string;
+  userId: string | null;
+  user?: {
+    id: string;
+    name: string;
+    email: string;
+    phone: string | null;
+    image: string | null;
+  };
 }
 
 interface FilterState {
@@ -32,81 +58,7 @@ interface FilterState {
   mileage: number[];
 }
 
-// Temporary mock data - replace with actual API call
-const mockCars: Car[] = [
-  {
-    id: "1",
-    title: "2023 Toyota Camry",
-    price: 25000,
-    year: 2023,
-    mileage: 15000,
-    location: "New York, NY",
-    imageUrl: "https://images.unsplash.com/photo-1624578571415-09e9b1991929?q=80&w=3063&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-    condition: "used",
-    make: "Toyota",
-    model: "Camry",
-  },
-  {
-    id: "2",
-    title: "2024 Tesla Model 3",
-    price: 45000,
-    year: 2024,
-    mileage: 0,
-    location: "Los Angeles, CA",
-    imageUrl: "https://images.unsplash.com/photo-1617788138017-80ad40651399?w=800&h=600&fit=crop",
-    condition: "new",
-    make: "Tesla",
-    model: "Model 3",
-  },
-  {
-    id: "3",
-    title: "2022 Honda Civic",
-    price: 22000,
-    year: 2022,
-    mileage: 25000,
-    location: "Chicago, IL",
-    imageUrl: "https://images.unsplash.com/photo-1580273916550-e323be2ae537?w=800&h=600&fit=crop",
-    condition: "used",
-    make: "Honda",
-    model: "Civic",
-  },
-  {
-    id: "4",
-    title: "2023 Ford Mustang",
-    price: 35000,
-    year: 2023,
-    mileage: 5000,
-    location: "Miami, FL",
-    imageUrl: "https://images.unsplash.com/photo-1584345604476-8ec5e12e42dd?w=800&h=600&fit=crop",
-    condition: "used",
-    make: "Ford",
-    model: "Mustang",
-  },
-  {
-    id: "5",
-    title: "2024 BMW 3 Series",
-    price: 48000,
-    year: 2024,
-    mileage: 0,
-    location: "Seattle, WA",
-    imageUrl: "https://images.unsplash.com/photo-1555215695-3004980ad54e?w=800&h=600&fit=crop",
-    condition: "new",
-    make: "BMW",
-    model: "3 Series",
-  },
-  {
-    id: "6",
-    title: "2023 Mercedes-Benz C-Class",
-    price: 42000,
-    year: 2023,
-    mileage: 10000,
-    location: "Boston, MA",
-    imageUrl: "https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?w=800&h=600&fit=crop",
-    condition: "used",
-    make: "Mercedes-Benz",
-    model: "C-Class",
-  },
-];
+
 
 function CarsFilter({ filters, onFilterChange }: { filters: FilterState; onFilterChange: (filters: FilterState) => void }) {
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -227,54 +179,90 @@ function CarsFilter({ filters, onFilterChange }: { filters: FilterState; onFilte
   );
 }
 
-function CarsList({ cars }: { cars: Car[] }) {
+function CarsList({ cars, loading }: { cars: Car[]; loading: boolean }) {
+  if (loading) {
+    return (
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {[...Array(6)].map((_, index) => (
+          <Card key={index} className="overflow-hidden">
+            <CardHeader className="p-0">
+              <div className="w-full h-48 bg-gray-200 animate-pulse" />
+            </CardHeader>
+            <CardContent className="p-4 space-y-2">
+              <div className="h-6 bg-gray-200 animate-pulse rounded" />
+              <div className="h-4 bg-gray-200 animate-pulse rounded w-2/3" />
+              <div className="h-8 bg-gray-200 animate-pulse rounded w-1/2" />
+              <div className="grid grid-cols-2 gap-2">
+                <div className="h-4 bg-gray-200 animate-pulse rounded" />
+                <div className="h-4 bg-gray-200 animate-pulse rounded" />
+                <div className="h-4 bg-gray-200 animate-pulse rounded" />
+                <div className="h-4 bg-gray-200 animate-pulse rounded" />
+              </div>
+            </CardContent>
+            <CardFooter className="p-4 pt-0">
+              <div className="w-full h-10 bg-gray-200 animate-pulse rounded" />
+            </CardFooter>
+          </Card>
+        ))}
+      </div>
+    );
+  }
+
+  if (cars.length === 0) {
+    return (
+      <div className="text-center py-12">
+        <h3 className="text-xl font-semibold mb-2">No cars found</h3>
+        <p className="text-gray-600">Try adjusting your filters to see more results.</p>
+      </div>
+    );
+  }
+
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
       {cars.map((car) => (
-        <Card key={car.id} className="overflow-hidden hover:shadow-lg transition-shadow">
-          <CardHeader className="p-0">
-            <div className="relative w-full h-48">
-              <Image
-                src={car.imageUrl}
-                alt={car.title}
-                fill
-                className="object-cover"
-                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-              />
-              <Badge 
-                variant={car.condition === "new" ? "default" : "secondary"}
-                className="absolute top-2 right-2"
-              >
-                {car.condition}
-              </Badge>
-            </div>
-          </CardHeader>
-          <CardContent className="p-4">
-            <div className="flex justify-between items-start mb-2">
-              <div>
-                <h3 className="font-semibold text-lg">{car.title}</h3>
-                <p className="text-sm text-gray-600">{car.location}</p>
+        <Link key={car.id} href={`/cars/${car.id}`}>
+          <Card className="overflow-hidden hover:shadow-lg transition-shadow cursor-pointer">
+            <CardHeader className="p-0">
+              <div className="relative w-full h-48">
+                <Image
+                  src={car.imageUrl}
+                  alt={car.title}
+                  fill
+                  className="object-cover"
+                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                />
+                <Badge 
+                  variant={car.condition === "new" ? "default" : "secondary"}
+                  className="absolute top-2 right-2"
+                >
+                  {car.condition}
+                </Badge>
               </div>
-            </div>
-            <p className="text-2xl font-bold text-primary mb-2">
-              ${car.price.toLocaleString()}
-            </p>
-            <div className="grid grid-cols-2 gap-2 text-sm text-gray-600">
-              <div>Year: {car.year}</div>
-              <div>Mileage: {car.mileage.toLocaleString()} mi</div>
-              <div>Make: {car.make}</div>
-              <div>Model: {car.model}</div>
-            </div>
-          </CardContent>
-          <CardFooter className="p-4 pt-0">
-            <Link 
-              href={`/cars/${car.id}`}
-              className="w-full bg-primary text-primary-foreground hover:bg-primary/90 px-4 py-2 rounded-md text-center"
-            >
-              View Details
-            </Link>
-          </CardFooter>
-        </Card>
+            </CardHeader>
+            <CardContent className="p-4">
+              <div className="flex justify-between items-start mb-2">
+                <div>
+                  <h3 className="font-semibold text-lg">{car.title}</h3>
+                  <p className="text-sm text-gray-600">{car.location}</p>
+                </div>
+              </div>
+              <p className="text-2xl font-bold text-primary mb-2">
+                ${car.price.toLocaleString()}
+              </p>
+              <div className="grid grid-cols-2 gap-2 text-sm text-gray-600">
+                <div>Year: {car.year}</div>
+                <div>Mileage: {car.mileage.toLocaleString()} mi</div>
+                <div>Make: {car.make}</div>
+                <div>Model: {car.model}</div>
+              </div>
+            </CardContent>
+            <CardFooter className="p-4 pt-0">
+              <div className="w-full bg-primary text-primary-foreground hover:bg-primary/90 px-4 py-2 rounded-md text-center">
+                View Details
+              </div>
+            </CardFooter>
+          </Card>
+        </Link>
       ))}
     </div>
   );
@@ -289,6 +277,33 @@ export default function Cars() {
     condition: "any",
     mileage: [0, 100000],
   });
+
+  const [cars, setCars] = useState<Car[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  // Fetch cars from API
+  useEffect(() => {
+    const fetchCars = async () => {
+      try {
+        setLoading(true);
+        const response = await fetch('/api/cars/active');
+        
+        if (!response.ok) {
+          throw new Error('Failed to fetch cars');
+        }
+
+        const data = await response.json();
+        setCars(data);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Failed to fetch cars');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchCars();
+  }, []);
 
   const filterCars = useCallback((cars: Car[], filters: FilterState) => {
     return cars.filter((car) => {
@@ -329,7 +344,18 @@ export default function Cars() {
     });
   }, []);
 
-  const filteredCars = filterCars(mockCars, filters);
+  const filteredCars = filterCars(cars, filters);
+
+  if (error) {
+    return (
+      <div className="container mx-auto py-8">
+        <div className="text-center py-12">
+          <h3 className="text-xl font-semibold mb-2 text-red-600">Error loading cars</h3>
+          <p className="text-gray-600">{error}</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="container mx-auto py-8">
@@ -338,7 +364,7 @@ export default function Cars() {
           <CarsFilter filters={filters} onFilterChange={setFilters} />
         </div>
         <div className="lg:col-span-3">
-          <CarsList cars={filteredCars} />
+          <CarsList cars={filteredCars} loading={loading} />
         </div>
       </div>
     </div>
