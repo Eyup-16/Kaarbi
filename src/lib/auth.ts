@@ -37,6 +37,7 @@ export const userRole = ac.newRole({
 });
 
 export const auth = betterAuth({
+    secret: process.env.BETTER_AUTH_SECRET || process.env.AUTH_SECRET || "development-secret-change-in-production",
     database: prismaAdapter(prisma, {
         provider: "postgresql", 
     }),
@@ -55,7 +56,10 @@ export const auth = betterAuth({
     session:{
     expiresIn:60*60*24*30, // 30 days
     updateAge:60*60*24, // 24 hours
-    cookieCacheTime:60*60*24, // 24 hours
+    cookieCache:{
+        enabled:true,
+        maxAge:60*60*24, // 24 hours
+    }
     },
     
     emailVerification:{
@@ -91,23 +95,26 @@ export const auth = betterAuth({
         })
     ],
     socialProviders: {
-
-        google: {
-            clientId: process.env.GOOGLE_CLIENT_ID as string, 
-            clientSecret: process.env.GOOGLE_CLIENT_SECRET as string,
-        },
-        microsoft: { 
-            clientId: process.env.MICROSOFT_CLIENT_ID as string, 
-            clientSecret: process.env.MICROSOFT_CLIENT_SECRET as string, 
-            // Optional
-            tenantId: 'common', 
-            requireSelectAccount: true
-        },
-        apple: {
-            clientId: process.env.APPLE_CLIENT_ID as string, 
-            clientSecret: process.env.APPLE_CLIENT_SECRET as string, 
-            appBundleIdentifier: process.env.APPLE_APP_BUNDLE_IDENTIFIER as string, 
-        }   
+        ...(process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET && {
+            google: {
+                clientId: process.env.GOOGLE_CLIENT_ID, 
+                clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+            }
+        }),
+        ...(process.env.MICROSOFT_CLIENT_ID && process.env.MICROSOFT_CLIENT_SECRET && {
+            microsoft: { 
+                clientId: process.env.MICROSOFT_CLIENT_ID, 
+                clientSecret: process.env.MICROSOFT_CLIENT_SECRET, 
+                tenantId: 'common'
+            }
+        }),
+        ...(process.env.APPLE_CLIENT_ID && process.env.APPLE_CLIENT_SECRET && {
+            apple: {
+                clientId: process.env.APPLE_CLIENT_ID, 
+                clientSecret: process.env.APPLE_CLIENT_SECRET, 
+                appBundleIdentifier: process.env.APPLE_APP_BUNDLE_IDENTIFIER as string, 
+            }
+        })   
     },
-    trustedOrigins: ["https://appleid.apple.com"],
+    trustedOrigins: ["https://appleid.apple.com","https://kaarbi.vercel.app"],
 });
