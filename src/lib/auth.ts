@@ -6,10 +6,6 @@ import { nextCookies } from "better-auth/next-js";
 import { admin } from "better-auth/plugins";
 import { createAccessControl } from "better-auth/plugins/access";
 
-// Rate limiting for verification emails - prevent spam
-// const emailRateLimit = new Map<string, number>();
-// const RATE_LIMIT_WINDOW = 60 * 1000; // 1 minute
-
 const prisma = new PrismaClient();
 
 // Define our custom permissions
@@ -77,17 +73,15 @@ export const auth = betterAuth({
         autoSignInAfterVerification:true,
         expiresIn:60*5,
         sendVerificationEmail:async ({user,token}, request)=> {
-            // Check if this is a signin attempt by looking at the request URL or method
-            const isSignInAttempt = request?.url?.includes('/sign-in') || 
-                                  request?.url?.includes('sign-in') ||
-                                  (request?.method === 'POST' && request?.url?.includes('/auth/'));
+            // Only block verification emails if it's specifically a signin attempt with email/password
+            const isSignInAttempt = request?.url?.includes('/sign-in/email');
             
             if (isSignInAttempt) {
                 console.log(`Blocked verification email resend on signin failure for ${user.email}`);
                 return; // Never send verification emails on failed signin attempts
             }
             
-            // Only send verification emails during signup or manual verification requests
+            // Send verification emails for signup and manual verification requests
             const verificationUrl = `${process.env.BETTER_AUTH_URL}/verify-email?token=${token}`;
             await sendEmail({
                 to:user.email,
