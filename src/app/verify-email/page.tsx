@@ -1,12 +1,15 @@
-import EmailVerfy from '@/components/pages/Email-verfy'
+import EmailVerify from '@/components/pages/EmailVerify'
 import React from 'react'
 
-const verfyemail = () => {
+// Prevent static generation of this page
+export const dynamic = 'force-dynamic'
+
+const VerifyEmail = () => {
   return (
     <div>
-        <EmailVerfy/>
+      <EmailVerify/>
     </div>
   )
 }
 
-export default verfyemail
+export default VerifyEmail

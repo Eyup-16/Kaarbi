@@ -1,11 +1,14 @@
 import { betterAuth } from "better-auth";
 import { prismaAdapter } from "better-auth/adapters/prisma";
-// If your Prisma file is located elsewhere, you can change the path
 import { PrismaClient } from "@/generated/prisma";
 import { sendEmail } from "./email"; 
 import { nextCookies } from "better-auth/next-js";
 import { admin } from "better-auth/plugins";
 import { createAccessControl } from "better-auth/plugins/access";
+
+// Rate limiting for verification emails - prevent spam
+// const emailRateLimit = new Map<string, number>();
+// const RATE_LIMIT_WINDOW = 60 * 1000; // 1 minute
 
 const prisma = new PrismaClient();
 
@@ -52,27 +55,47 @@ export const auth = betterAuth({
       });
     },
     },
-    // Session configuration
+    // Session configuration - more secure approach
     session:{
-    expiresIn:60*60*24*30, // 30 days
-    updateAge:60*60*24, // 24 hours
-    cookieCache:{
-        enabled:true,
-        maxAge:60*60*24, // 24 hours
-    }
+        expiresIn: 60*60*24, // 1 day - session duration
+        updateAge: 60*60, // 1 hour 
+        cookieCache:{
+            enabled: false, // Disable cookie caching for security
+        },
+        // Only include essential user data in the session
+        select: {
+            id: true,
+            email: true,
+            name: true,
+            role: true,
+            image: true
+        }
     },
     
     emailVerification:{
-        sendOnSignUp:true, // Send verification email on sign up
-        autoSignInAfterVerification:true, // Auto sign in the user after they verify their email
-        expiresIn:60*5, // 5 hours
-        sendVerificationEmail:async ({user,token})=> {
-            const verificationUrl = `${process.env.BETTER_AUTH_URL}/api/auth/verify-email?token=${token}&callbackURL=${process.env.EMAIL_VERIFICATION_CALLBACK_URL}`;
+        sendOnSignUp:true,
+        autoSignInAfterVerification:true,
+        expiresIn:60*5,
+        sendVerificationEmail:async ({user,token}, request)=> {
+            // Check if this is a signin attempt by looking at the request URL or method
+            const isSignInAttempt = request?.url?.includes('/sign-in') || 
+                                  request?.url?.includes('sign-in') ||
+                                  (request?.method === 'POST' && request?.url?.includes('/auth/'));
+            
+            if (isSignInAttempt) {
+                console.log(`Blocked verification email resend on signin failure for ${user.email}`);
+                return; // Never send verification emails on failed signin attempts
+            }
+            
+            // Only send verification emails during signup or manual verification requests
+            const verificationUrl = `${process.env.BETTER_AUTH_URL}/verify-email?token=${token}`;
             await sendEmail({
                 to:user.email,
                 subject:"Verify your email",
                 text:`Click the link below to verify your email:\n${verificationUrl}`
             })
+            
+            console.log(`Verification email sent to ${user.email}`);
         }
         
     },

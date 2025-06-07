@@ -1,6 +1,5 @@
 'use server'
 import nodemailer, { SentMessageInfo } from "nodemailer";
-import { MailtrapTransport } from "mailtrap"
 
 // Types
 interface EmailParams {
@@ -16,9 +15,8 @@ interface EmailResponse {
 }
 
 // Constants
-const TOKEN = process.env.MAILTRAP_TOKEN || '';
 const DEV_EMAIL = 'dev@localhost.co';
-const PROD_EMAIL = 'admin@kaarbi.com';
+const PROD_EMAIL = process.env.GMAIL_USER || 'admin@kaarbi.com';
 
 // Email validation regex
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -43,11 +41,13 @@ export const sendEmail = async ({ to, subject, text }: EmailParams): Promise<Ema
 
   // Create transporter based on environment
   const transporter = process.env.NODE_ENV === 'production'
-    ? nodemailer.createTransport(
-        MailtrapTransport({
-          token: TOKEN
-        })
-      )
+    ? nodemailer.createTransport({
+        service: 'gmail',
+        auth: {
+          user: process.env.GMAIL_USER,
+          pass: process.env.GMAIL_APP_PASSWORD,
+        },
+      })
     : nodemailer.createTransport({
         host: 'localhost',
         port: 1025,
@@ -78,8 +78,8 @@ export const sendEmail = async ({ to, subject, text }: EmailParams): Promise<Ema
     return {
       success: false,
       message: process.env.NODE_ENV === 'development'
-        ? "Failed to send email. Is your local MailDev/MailHog running?"
-        : "Failed to send email. Please try again later.",
+        ? "Failed to send email. Is your local MailDev running?"
+        : "Failed to send email. Please check your Gmail configuration.",
     };
   }
 }
