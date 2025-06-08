@@ -1,7 +1,7 @@
 'use server'
 import nodemailer, { SentMessageInfo } from "nodemailer";
 import { render } from '@react-email/components';
-import VerificationEmail from '@/emails/verification-email';
+import VerificationEmail from '@/components/pages/EmailTemplate';
 // Types
 interface EmailParams {
   to: string;
