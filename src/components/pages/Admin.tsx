@@ -1,11 +1,27 @@
 'use client'
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { authClient, useSession } from '@/lib/auth-client';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 import { toast } from 'sonner';
-import {useRouter} from 'next/navigation'
+import { useRouter } from 'next/navigation';
+import SuperAdminDashboard from '@/components/super-admin/SuperAdminDashboard';
+import { 
+  Shield, 
+  Users, 
+  Car, 
+  Activity, 
+  RefreshCw, 
+  CheckCircle, 
+  XCircle,
+  Clock,
+  ChevronRight,
+  LoaderCircle,
+  Lock
+} from 'lucide-react';
+import { Separator } from '@/components/ui/separator';
 interface User {
   id: string;
   name: string;
@@ -42,17 +58,15 @@ interface SessionResponse {
 }
 
 export function Admin() {
-  const {data:session, isPending} = useSession()
-  const router = useRouter()
+  const { data: session, isPending } = useSession();
+  const router = useRouter();
   const [activeTab, setActiveTab] = useState('users');
   const [users, setUsers] = useState<User[]>([]);
   const [cars, setCars] = useState<Car[]>([]);
   const [sessions, setSessions] = useState<Session[]>([]);
-  useEffect(()=>{
-    if(!isPending && !session){
-      router.push('/not-found')
-    }
-  })
+  const [loading, setLoading] = useState(false);
+  const [stats, setStats] = useState({ userCount: 0, carCount: 0, sessionCount: 0 });
+
   const fetchUsers = async () => {
     try {
       const response = await authClient.admin.listUsers({
@@ -64,6 +78,7 @@ export function Admin() {
       if ('users' in response) {
         const userResponse = response as unknown as UserResponse;
         setUsers(userResponse.users);
+        setStats(prev => ({ ...prev, userCount: userResponse.total || userResponse.users.length }));
       }
     } catch (err) {
       console.error('Error fetching users:', err);
@@ -71,11 +86,49 @@ export function Admin() {
     }
   };
 
+  const fetchInitialData = useCallback(async () => {
+    setLoading(true);
+    try {
+      await Promise.all([fetchUsers(), fetchCars(), fetchSessions()]);
+    } catch (error) {
+      console.error('Error fetching initial data:', error);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  // Check authentication and authorization
+  useEffect(() => {
+    if (!isPending && !session) {
+      router.push('/login');
+      return;
+    }
+    
+    if (session && !['ADMIN', 'SUPER_ADMIN', 'MODERATOR'].includes(session.user.role || '')) {
+      router.push('/dashboard');
+      return;
+    }
+    
+    if (session && ['ADMIN', 'SUPER_ADMIN', 'MODERATOR'].includes(session.user.role || '')) {
+      fetchInitialData();
+    }
+  }, [session, isPending, router, fetchInitialData]);
+
+  // Check if user is super admin
+  const isSuperAdmin = session?.user?.role === 'SUPER_ADMIN';
+
+  // If super admin, show super admin dashboard
+  if (isSuperAdmin) {
+    return <SuperAdminDashboard />;
+  }
+
   const fetchCars = async () => {
     try {
       const response = await fetch('/api/admin/cars');
+      if (!response.ok) throw new Error('Failed to fetch cars');
       const data = await response.json();
       setCars(data.cars);
+      setStats(prev => ({ ...prev, carCount: data.total || data.cars.length }));
     } catch (err) {
       console.error('Error fetching cars:', err);
       toast.error('Failed to fetch cars');
@@ -84,8 +137,8 @@ export function Admin() {
 
   const fetchSessions = async () => {
     try {
-      const session = await authClient.getSession();
-      const userId = session?.data?.user?.id;
+      const sessionData = await authClient.getSession();
+      const userId = sessionData?.data?.user?.id;
       
       if (!userId) {
         toast.error('No active session found');
@@ -99,6 +152,7 @@ export function Admin() {
       if ('sessions' in response) {
         const sessionResponse = response as unknown as SessionResponse;
         setSessions(sessionResponse.sessions);
+        setStats(prev => ({ ...prev, sessionCount: sessionResponse.sessions.length }));
       }
     } catch (err) {
       console.error('Error fetching sessions:', err);
@@ -122,9 +176,10 @@ export function Admin() {
 
   const handleApproveCar = async (carId: string) => {
     try {
-      await fetch(`/api/cars/${carId}/approve`, {
+      const response = await fetch(`/api/cars/${carId}/approve`, {
         method: 'PATCH'
       });
+      if (!response.ok) throw new Error('Failed to approve car');
       toast.success('Car approved successfully');
       fetchCars();
     } catch (err) {
@@ -133,102 +188,298 @@ export function Admin() {
     }
   };
 
+  const handleRevokeSession = async (sessionToken: string) => {
+    try {
+      await authClient.admin.revokeUserSession({
+        sessionToken
+      });
+      toast.success('Session revoked successfully');
+      fetchSessions();
+    } catch (err) {
+      console.error('Error revoking session:', err);
+      toast.error('Failed to revoke session');
+    }
+  };
+
+  // Loading state
+  if (isPending) {
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <LoaderCircle className="w-8 h-8 animate-spin text-blue-600" />
+      </div>
+    );
+  }
+
+  // Unauthorized access
+  if (!session || !['ADMIN', 'SUPER_ADMIN', 'MODERATOR'].includes(session.user.role || '')) {
+    return (
+      <div className="container max-w-4xl mx-auto py-12 px-4">
+        <Card className="p-8 text-center">
+          <div className="flex justify-center mb-4">
+            <Lock className="w-12 h-12 text-red-500" />
+          </div>
+          <h1 className="text-2xl font-bold text-gray-900 mb-2">Access Restricted</h1>
+          <p className="text-gray-600 mb-6">You don&apos;t have permission to access the admin dashboard.</p>
+          <Button onClick={() => router.push('/')} variant="outline">
+            Return to Home
+          </Button>
+        </Card>
+      </div>
+    );
+  }
+
+  const getStatusBadge = (status: string) => {
+    switch (status.toUpperCase()) {
+      case 'PENDING':
+        return <Badge variant="outline" className="bg-yellow-50 text-yellow-700 border-yellow-200"><Clock className="w-3 h-3 mr-1" />Pending</Badge>;
+      case 'ACTIVE':
+        return <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200"><CheckCircle className="w-3 h-3 mr-1" />Active</Badge>;
+      case 'SOLD':
+        return <Badge variant="outline" className="bg-gray-50 text-gray-700 border-gray-200"><XCircle className="w-3 h-3 mr-1" />Sold</Badge>;
+      default:
+        return <Badge variant="outline">{status}</Badge>;
+    }
+  };
+
   return (
-    <div className="container mx-auto py-8">
-      <h1 className="text-3xl font-bold mb-8">Admin Dashboard</h1>
-      
-      <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <TabsList>
-          <TabsTrigger value="users">Users</TabsTrigger>
-          <TabsTrigger value="cars">Cars</TabsTrigger>
-          <TabsTrigger value="sessions">Sessions</TabsTrigger>
-        </TabsList>
+    <div className="container max-w-7xl mx-auto py-8 px-4">
+      {/* Header */}
+      <div className="flex items-center justify-between mb-8">
+        <div>
+          <h1 className="text-4xl font-bold text-gray-900 mb-2">Admin Dashboard</h1>
+          <p className="text-gray-500">Manage users, car listings, and system activities</p>
+        </div>
+        <div className="flex items-center gap-3">
+          <Badge variant="outline" className="px-3 py-2 bg-blue-50 text-blue-700 border-blue-200">
+            <Shield className="w-4 h-4 mr-2" />
+            {session?.user?.role || 'ADMIN'}
+          </Badge>
+        </div>
+      </div>
 
-        <TabsContent value="users">
-          <Card>
-            <CardHeader>
-              <CardTitle>User Management</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <Button onClick={fetchUsers}>Refresh Users</Button>
-              <div className="mt-4">
+      {/* Stats Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <Card className="p-6 hover:shadow-lg transition-all duration-300">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm font-medium text-gray-600">Total Users</p>
+              <p className="text-3xl font-bold text-gray-900">{stats.userCount}</p>
+            </div>
+            <Users className="w-12 h-12 text-blue-600 bg-blue-50 p-2 rounded-lg" />
+          </div>
+        </Card>
+        
+        <Card className="p-6 hover:shadow-lg transition-all duration-300">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm font-medium text-gray-600">Car Listings</p>
+              <p className="text-3xl font-bold text-gray-900">{stats.carCount}</p>
+            </div>
+            <Car className="w-12 h-12 text-green-600 bg-green-50 p-2 rounded-lg" />
+          </div>
+        </Card>
+        
+        <Card className="p-6 hover:shadow-lg transition-all duration-300">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm font-medium text-gray-600">Active Sessions</p>
+              <p className="text-3xl font-bold text-gray-900">{stats.sessionCount}</p>
+            </div>
+            <Activity className="w-12 h-12 text-purple-600 bg-purple-50 p-2 rounded-lg" />
+          </div>
+        </Card>
+      </div>
+
+      {/* Main Content */}
+      <Card className="p-6 shadow-lg">
+        <Tabs value={activeTab} onValueChange={setActiveTab}>
+          <div className="flex items-center justify-between mb-6">
+            <TabsList className="bg-gray-100">
+              <TabsTrigger value="users" className="flex items-center gap-2">
+                <Users className="w-4 h-4" />
+                Users
+              </TabsTrigger>
+              <TabsTrigger value="cars" className="flex items-center gap-2">
+                <Car className="w-4 h-4" />
+                Cars
+              </TabsTrigger>
+              <TabsTrigger value="sessions" className="flex items-center gap-2">
+                <Activity className="w-4 h-4" />
+                Sessions
+              </TabsTrigger>
+            </TabsList>
+            
+            <Button 
+              onClick={() => {
+                setLoading(true);
+                Promise.all([fetchUsers(), fetchCars(), fetchSessions()])
+                  .catch(error => console.error('Error fetching data:', error))
+                  .finally(() => setLoading(false));
+              }} 
+              variant="outline" 
+              size="sm"
+              disabled={loading}
+              className="flex items-center gap-2"
+            >
+              <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
+              Refresh
+            </Button>
+          </div>
+
+          <TabsContent value="users" className="space-y-4">
+            <div className="flex items-center justify-between">
+              <h3 className="text-lg font-semibold text-gray-900">User Management</h3>
+              <Button onClick={fetchUsers} variant="outline" size="sm">
+                <RefreshCw className="w-4 h-4 mr-2" />
+                Refresh Users
+              </Button>
+            </div>
+            <Separator />
+            
+            {users.length === 0 ? (
+              <div className="text-center py-12">
+                <Users className="w-12 h-12 text-gray-300 mx-auto mb-4" />
+                <h3 className="text-lg font-medium text-gray-900 mb-1">No users found</h3>
+                <p className="text-gray-500">No users to display at the moment.</p>
+              </div>
+            ) : (
+              <div className="space-y-4">
                 {users.map((user) => (
-                  <div key={user.id} className="flex items-center justify-between p-4 border-b">
-                    <div>
-                      <p className="font-medium">{user.name}</p>
-                      <p className="text-sm text-gray-500">{user.email}</p>
+                  <Card key={user.id} className="p-4 hover:shadow-md transition-all duration-200">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-4">
+                        <div className="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center">
+                          <Users className="w-5 h-5 text-gray-600" />
+                        </div>
+                        <div>
+                          <p className="font-medium text-gray-900">{user.name}</p>
+                          <p className="text-sm text-gray-500">{user.email}</p>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-3">
+                        {user.banned && (
+                          <Badge variant="destructive">Banned</Badge>
+                        )}
+                        <Button
+                          variant={user.banned ? "outline" : "destructive"}
+                          size="sm"
+                          onClick={() => handleBanUser(user.id)}
+                          disabled={user.banned}
+                        >
+                          {user.banned ? 'Already Banned' : 'Ban User'}
+                        </Button>
+                      </div>
                     </div>
-                    <Button
-                      variant="destructive"
-                      onClick={() => handleBanUser(user.id)}
-                      disabled={user.banned}
-                    >
-                      {user.banned ? 'Banned' : 'Ban User'}
-                    </Button>
-                  </div>
+                  </Card>
                 ))}
               </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
+            )}
+          </TabsContent>
 
-        <TabsContent value="cars">
-          <Card>
-            <CardHeader>
-              <CardTitle>Car Listings</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <Button onClick={fetchCars}>Refresh Cars</Button>
-              <div className="mt-4">
+          <TabsContent value="cars" className="space-y-4">
+            <div className="flex items-center justify-between">
+              <h3 className="text-lg font-semibold text-gray-900">Car Listings Management</h3>
+              <Button onClick={fetchCars} variant="outline" size="sm">
+                <RefreshCw className="w-4 h-4 mr-2" />
+                Refresh Cars
+              </Button>
+            </div>
+            <Separator />
+            
+            {cars.length === 0 ? (
+              <div className="text-center py-12">
+                <Car className="w-12 h-12 text-gray-300 mx-auto mb-4" />
+                <h3 className="text-lg font-medium text-gray-900 mb-1">No car listings found</h3>
+                <p className="text-gray-500">No car listings to review at the moment.</p>
+              </div>
+            ) : (
+              <div className="space-y-4">
                 {cars.map((car) => (
-                  <div key={car.id} className="flex items-center justify-between p-4 border-b">
-                    <div>
-                      <p className="font-medium">{car.title}</p>
-                      <p className="text-sm text-gray-500">{car.status}</p>
+                  <Card key={car.id} className="p-4 hover:shadow-md transition-all duration-200">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-4">
+                        <div className="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center">
+                          <Car className="w-5 h-5 text-gray-600" />
+                        </div>
+                        <div>
+                          <p className="font-medium text-gray-900">{car.title}</p>
+                          <div className="flex items-center gap-2 mt-1">
+                            {getStatusBadge(car.status)}
+                          </div>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-3">
+                        {car.status === 'PENDING' && (
+                          <Button 
+                            onClick={() => handleApproveCar(car.id)}
+                            size="sm"
+                            className="bg-green-600 hover:bg-green-700"
+                          >
+                            <CheckCircle className="w-4 h-4 mr-2" />
+                            Approve
+                          </Button>
+                        )}
+                        <Button variant="outline" size="sm">
+                          <ChevronRight className="w-4 h-4" />
+                        </Button>
+                      </div>
                     </div>
-                    {car.status === 'PENDING' && (
-                      <Button onClick={() => handleApproveCar(car.id)}>
-                        Approve
-                      </Button>
-                    )}
-                  </div>
+                  </Card>
                 ))}
               </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
+            )}
+          </TabsContent>
 
-        <TabsContent value="sessions">
-          <Card>
-            <CardHeader>
-              <CardTitle>Active Sessions</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <Button onClick={fetchSessions}>Refresh Sessions</Button>
-              <div className="mt-4">
-                {sessions.map((session) => (
-                  <div key={session.id} className="flex items-center justify-between p-4 border-b">
-                    <div>
-                      <p className="font-medium">Session ID: {session.id}</p>
-                      <p className="text-sm text-gray-500">
-                        Created: {new Date(session.createdAt).toLocaleString()}
-                      </p>
+          <TabsContent value="sessions" className="space-y-4">
+            <div className="flex items-center justify-between">
+              <h3 className="text-lg font-semibold text-gray-900">Active Sessions</h3>
+              <Button onClick={fetchSessions} variant="outline" size="sm">
+                <RefreshCw className="w-4 h-4 mr-2" />
+                Refresh Sessions
+              </Button>
+            </div>
+            <Separator />
+            
+            {sessions.length === 0 ? (
+              <div className="text-center py-12">
+                <Activity className="w-12 h-12 text-gray-300 mx-auto mb-4" />
+                <h3 className="text-lg font-medium text-gray-900 mb-1">No active sessions</h3>
+                <p className="text-gray-500">No active sessions to display.</p>
+              </div>
+            ) : (
+              <div className="space-y-4">
+                {sessions.map((sessionItem) => (
+                  <Card key={sessionItem.id} className="p-4 hover:shadow-md transition-all duration-200">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-4">
+                        <div className="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center">
+                          <Activity className="w-5 h-5 text-gray-600" />
+                        </div>
+                        <div>
+                          <p className="font-medium text-gray-900">Session ID: {sessionItem.id.slice(0, 8)}...</p>
+                          <div className="flex items-center gap-4 text-sm text-gray-500 mt-1">
+                            <span>Created: {new Date(sessionItem.createdAt).toLocaleDateString()}</span>
+                            <span>•</span>
+                            <span>Expires: {new Date(sessionItem.expiresAt).toLocaleDateString()}</span>
+                          </div>
+                        </div>
+                      </div>
+                      <Button
+                        variant="destructive"
+                        size="sm"
+                        onClick={() => handleRevokeSession(sessionItem.token)}
+                      >
+                        <XCircle className="w-4 h-4 mr-2" />
+                        Revoke
+                      </Button>
                     </div>
-                    <Button
-                      variant="destructive"
-                      onClick={() => authClient.admin.revokeUserSession({
-                        sessionToken: session.token
-                      })}
-                    >
-                      Revoke
-                    </Button>
-                  </div>
+                  </Card>
                 ))}
               </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-      </Tabs>
+            )}
+          </TabsContent>
+        </Tabs>
+      </Card>
     </div>
   );
 } 

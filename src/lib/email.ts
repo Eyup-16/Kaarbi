@@ -1,7 +1,8 @@
 'use server'
 import nodemailer, { SentMessageInfo } from "nodemailer";
 import { render } from '@react-email/components';
-import VerificationEmail from '@/components/pages/EmailTemplate';
+import VerificationEmail from '@/components/email/EmailTemplate';
+import PasswordResetEmail from '@/components/email/PasswordResetEmail';
 // Types
 interface EmailParams {
   to: string;
@@ -57,10 +58,15 @@ export const sendEmail = async ({ to, subject, text, html }: EmailParams): Promi
         ignoreTLS: true,
       });
 
-      // Use provided HTML or render verification template if html param contains a URL
-      const emailHtml = html && html.startsWith('http') 
-        ? await render(VerificationEmail({ verificationUrl: html }))
-        : html;
+      // Use provided HTML or render appropriate template based on URL pattern
+      let emailHtml = html;
+      if (html && html.startsWith('http')) {
+        if (html.includes('reset-password') || html.includes('password-reset')) {
+          emailHtml = await render(PasswordResetEmail({ resetUrl: html }));
+        } else {
+          emailHtml = await render(VerificationEmail({ verificationUrl: html }));
+        }
+      }
       
       const fromEmail = process.env.NODE_ENV === 'development' ? DEV_EMAIL : PROD_EMAIL;
 
