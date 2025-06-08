@@ -44,7 +44,7 @@ export default function VerificationEmail({ verificationUrl }: VerificationEmail
             <Row>
               <Column style={logoColumn}>
                 <Text style={logoText}>
-                  🏢 <strong>KAARBI</strong>
+                   <strong>KAARBI</strong>
                 </Text>
                 <Text style={logoSubtext}>CAR MARKETPLACE</Text>
               </Column>
@@ -55,17 +55,17 @@ export default function VerificationEmail({ verificationUrl }: VerificationEmail
             
             <Text style={emailIcon}>📧</Text>
             <Heading as="h1" style={headerTitle}>
-              Verify Your Email
+              Welcome to Kaarbi!
             </Heading>
             <Text style={headerSubtitle}>
-              Please verify your email address to continue
+              Thank you for signing up. You&apos;re just one step away from accessing our platform and starting your career transformation journey.
             </Text>
           </Section>
 
           {/* Content Section */}
           <Section style={content}>
             <Text style={contentText}>
-              We&apos;ve sent a verification link to your email. Click the button below to verify your account and get started with Kaarbi.
+              Please confirm your email address to activate your account:
             </Text>
             
             {verificationUrl && (
@@ -92,7 +92,7 @@ export default function VerificationEmail({ verificationUrl }: VerificationEmail
                         display: "block",
                       }}
                     >
-                      Verify Email Address →
+                      Confirm My Email
                     </a>
                   </td>
                 </tr>
@@ -100,25 +100,25 @@ export default function VerificationEmail({ verificationUrl }: VerificationEmail
             )}
             
             <Text style={helpText}>
-              Didn&apos;t receive an email? Check your spam folder or{" "}
+              This link will expire in 24 hours. If you didn&apos;t create this account, please ignore this email.
+            </Text>
+            
+            <Text style={helpText}>
+              Having trouble? Contact our support team at{" "}
               <Link href="mailto:support@kaarbi.com" style={supportLink}>
-                contact support
+                support@kaarbi.com
               </Link>
-              .
             </Text>
           </Section>
 
           {/* Footer Section */}
           <Hr style={hr} />
           <Section style={footer}>
-            <Text style={footerText}>
-              Need help?{" "}
-              <Link href="mailto:support@kaarbi.com" style={footerLink}>
-                Contact Support
-              </Link>
-            </Text>
             <Text style={footerCompany}>
-              <strong>KAARBI</strong> • Your trusted car marketplace
+              © 2025 Kaarbi, Inc. All rights reserved.
+            </Text>
+            <Text style={footerAddress}>
+              511 Monroe St, Detroit, MI 48226
             </Text>
           </Section>
         </Container>
@@ -254,24 +254,19 @@ const footer = {
   textAlign: "center" as const,
 };
 
-const footerText = {
-  color: "#6b7280",
-  fontSize: "14px",
-  margin: "0 0 12px 0",
-  lineHeight: "1.5",
-  fontWeight: "400",
-};
 
-const footerLink = {
-  color: "#3b82f6",
-  textDecoration: "underline",
-  fontWeight: "500",
+const footerAddress = {
+  color: "#9ca3af",
+  fontSize: "11px",
+  margin: "0",
+  lineHeight: "1.4",
+  fontWeight: "400",
 };
 
 const footerCompany = {
   color: "#9ca3af",
   fontSize: "12px",
-  margin: "0",
+  margin: "0 0 8px 0",
   lineHeight: "1.4",
   fontWeight: "500",
 };

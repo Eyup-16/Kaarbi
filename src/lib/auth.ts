@@ -70,8 +70,8 @@ export const auth = betterAuth({
     
     emailVerification:{
         sendOnSignUp:true,
-        autoSignInAfterVerification:true,
-        expiresIn:60*5,
+        autoSignInAfterVerification:false,
+        expiresIn:60*30, // Increased to 30 minutes for better user experience
         sendVerificationEmail:async ({user,token}, request)=> {
             // Only block verification emails if it's specifically a signin attempt with email/password
             const isSignInAttempt = request?.url?.includes('/sign-in/email');
@@ -85,8 +85,9 @@ export const auth = betterAuth({
             const verificationUrl = `${process.env.BETTER_AUTH_URL}/verify-email?token=${token}`;
             await sendEmail({
                 to:user.email,
-                subject:"Verify your email",
-                text:`Click the link below to verify your email:\n${verificationUrl}`
+                subject:"Confirm Your Email",
+                text:`Confirm your email address to complete your Kaarbi account setup.\n\nClick this link: ${verificationUrl}\n\nIf the link doesn't work, copy and paste it into your browser.\n\nThis link expires in 30 minutes for security.`,
+                html: verificationUrl
             })
             
             console.log(`Verification email sent to ${user.email}`);

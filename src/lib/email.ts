@@ -7,6 +7,7 @@ interface EmailParams {
   to: string;
   subject: string;
   text: string;
+  html?: string;
 }
 
 interface EmailResponse {
@@ -22,7 +23,7 @@ const PROD_EMAIL = process.env.GMAIL_USER || 'admin@kaarbi.com';
 // Email validation regex
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-export const sendEmail = async ({ to, subject, text }: EmailParams): Promise<EmailResponse> => {
+export const sendEmail = async ({ to, subject, text, html }: EmailParams): Promise<EmailResponse> => {
   // Validate email address
   const sanitizedEmail = to.toLowerCase().trim();
   if (!EMAIL_REGEX.test(sanitizedEmail)) {
@@ -56,7 +57,11 @@ export const sendEmail = async ({ to, subject, text }: EmailParams): Promise<Ema
         ignoreTLS: true,
       });
 
-      const emailHtml = await render(VerificationEmail({ verificationUrl: text }));
+      // Use provided HTML or render verification template if html param contains a URL
+      const emailHtml = html && html.startsWith('http') 
+        ? await render(VerificationEmail({ verificationUrl: html }))
+        : html;
+      
       const fromEmail = process.env.NODE_ENV === 'development' ? DEV_EMAIL : PROD_EMAIL;
 
   try {
@@ -65,7 +70,7 @@ export const sendEmail = async ({ to, subject, text }: EmailParams): Promise<Ema
       to: sanitizedEmail,
       subject: subject.trim(),
       text: text.trim(),
-      html:emailHtml
+      html: emailHtml
     });
 
     if (process.env.NODE_ENV === 'development') {
