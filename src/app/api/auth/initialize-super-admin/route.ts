@@ -34,7 +34,9 @@ export async function POST(request: Request) {
         password,
         name,
         role: 'SUPER_ADMIN',
-        emailVerified: true // Auto-verify super admin
+        data: {
+          emailVerified: true // Auto-verify super admin
+        }
       }
     });
 
