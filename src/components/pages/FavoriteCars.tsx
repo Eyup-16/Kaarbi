@@ -4,12 +4,13 @@ import { useState, useEffect } from "react";
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Heart, Trash2 } from "lucide-react";
+import { Heart, Trash2, Shield } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useSession } from "@/lib/auth-client";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 interface Car {
   id: string;
@@ -29,7 +30,7 @@ export function FavoriteCars() {
   const router = useRouter();
   const [favoriteCars, setFavoriteCars] = useState<Car[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-
+  
   useEffect(() => {
     if (!isPending && !session) {
       router.push('/login');
@@ -91,6 +92,22 @@ export function FavoriteCars() {
         <Button asChild>
           <Link href="/cars">Browse Cars</Link>
         </Button>
+      </div>
+    );
+  }
+  // Check if user is admin
+  const isAdminRole = session?.user?.role === 'ADMIN' || session?.user?.role === 'SUPER_ADMIN';
+
+  if (!isPending && isAdminRole) {
+    return (
+      <div className="container mx-auto p-6">
+        <Alert className="max-w-md mx-auto">
+          <Shield className="h-4 w-4" />
+          <AlertTitle>Admin Access Restricted</AlertTitle>
+          <AlertDescription>
+            Administrators cannot save favorite cars. This feature is restricted to regular users only.
+          </AlertDescription>
+        </Alert>
       </div>
     );
   }

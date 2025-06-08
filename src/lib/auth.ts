@@ -12,13 +12,21 @@ const prisma = new PrismaClient();
 const statement = {
   user: ["create", "list", "set-role", "ban", "impersonate", "delete", "set-password"],
   session: ["list", "revoke", "delete"],
-  car: ["approve", "delete", "list-all", "ban-listing"]
+  car: ["approve", "delete", "list-all", "ban-listing"],
+  admin: ["manage-admins", "manage-system", "full-access"]
 } as const;
 
 // Create access control
 export const ac = createAccessControl(statement);
 
 // Define roles with permissions
+export const superAdminRole = ac.newRole({
+  user: ["create", "list", "set-role", "ban", "impersonate", "delete", "set-password"],
+  session: ["list", "revoke", "delete"],
+  car: ["approve", "delete", "list-all", "ban-listing"],
+  admin: ["manage-admins", "manage-system", "full-access"]
+});
+
 export const adminRole = ac.newRole({
   user: ["create", "list", "set-role", "ban", "impersonate", "delete", "set-password"],
   session: ["list", "revoke", "delete"],
@@ -46,8 +54,9 @@ export const auth = betterAuth({
         sendResetPassword: async ({user, url}) => {
       await sendEmail({
         to: user.email,
-        subject: "Reset your password",
-        text: `Click the link to reset your password: ${url}`,
+        subject: "Reset your password for Kaarbi",
+        text: `Hi ${user.name || 'there'},\n\nWe received a request to reset your password for your Kaarbi account.\n\nClick this link to create a new password: ${url}\n\nThis link will expire in 24 hours for your security.\n\nIf you didn't request this password reset, you can safely ignore this email.\n\nBest regards,\nThe Kaarbi Team`,
+        html: url
       });
     },
     },
@@ -101,12 +110,13 @@ export const auth = betterAuth({
         admin({
             ac,
             roles: {
-                admin: adminRole,
-                moderator: moderatorRole,
-                user: userRole
+                SUPER_ADMIN: superAdminRole,
+                ADMIN: adminRole,
+                MODERATOR: moderatorRole,
+                USER: userRole
             },
-            defaultRole: "user",
-            adminRoles: ["admin", "moderator"],
+            defaultRole: "USER",
+            adminRoles: ["SUPER_ADMIN", "ADMIN", "MODERATOR"],
             impersonationSessionDuration: 60 * 60, // 1 hour
             defaultBanReason: "Violation of terms of service",
             bannedUserMessage: "Your account has been banned. Please contact support if you believe this is an error."

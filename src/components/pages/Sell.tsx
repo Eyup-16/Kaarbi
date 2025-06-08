@@ -17,13 +17,14 @@ import { X } from "lucide-react";
 import Image from "next/image";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { AlertTriangle } from "lucide-react";
+import { AlertTriangle, Shield } from "lucide-react";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Check, ChevronsUpDown } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useSession } from "@/lib/auth-client";
 
 interface ImagePreview {
   file: File;
@@ -79,6 +80,9 @@ interface VehicleData {
 
 export default function Sell() {
   const router = useRouter();
+  const { data: session, isPending } = useSession();
+
+  
   const [formData, setFormData] = useState({
     make: "",
     model: "",
@@ -439,6 +443,22 @@ export default function Sell() {
     };
   }, [imagePreviews]);
 
+  // Check if user is admin and block access
+  const isAdminRole = session?.user?.role === 'ADMIN' || session?.user?.role === 'SUPER_ADMIN';
+
+  if (!isPending && isAdminRole) {
+    return (
+      <div className="container mx-auto p-6">
+        <Alert className="max-w-md mx-auto">
+          <Shield className="h-4 w-4" />
+          <AlertTitle>Admin Access Restricted</AlertTitle>
+          <AlertDescription>
+            Administrators cannot list cars for sale. This feature is restricted to regular users only.
+          </AlertDescription>
+        </Alert>
+      </div>
+    );
+  }
   return (
     <div className="container mx-auto py-10">
       <Alert variant="destructive" className="mb-6">

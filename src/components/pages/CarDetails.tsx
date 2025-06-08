@@ -77,6 +77,9 @@ export default function CarDetails({ id }: CarDetailsProps) {
   const [carData, setCarData] = useState<Car | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  
+  // Check if user is admin
+  const isAdminRole = session?.user?.role === 'ADMIN' || session?.user?.role === 'SUPER_ADMIN';
 
   // Fetch car data from API
   useEffect(() => {
@@ -282,14 +285,16 @@ export default function CarDetails({ id }: CarDetailsProps) {
           </div>
         </div>
         <div className="flex items-center gap-3">
-          <Button 
-            variant="outline" 
-            size="icon" 
-            onClick={handleFavorite}
-            className="hover:bg-red-50 transition-colors"
-          >
-            <Heart className={`h-5 w-5 transition-all duration-200 ${isFavorite ? "fill-red-500 text-red-500 scale-110" : ""}`} />
-          </Button>
+          {!isAdminRole && (
+            <Button 
+              variant="outline" 
+              size="icon" 
+              onClick={handleFavorite}
+              className="hover:bg-red-50 transition-colors"
+            >
+              <Heart className={`h-5 w-5 transition-all duration-200 ${isFavorite ? "fill-red-500 text-red-500 scale-110" : ""}`} />
+            </Button>
+          )}
           <Button 
             variant="outline" 
             size="icon"

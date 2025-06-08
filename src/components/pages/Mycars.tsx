@@ -31,6 +31,9 @@ interface CarForSale {
 export default function Mycars() {
   const { data: session, isPending } = useSession();
   const router = useRouter();
+  
+  // Check if user is admin
+  const isAdminRole = session?.user?.role === 'ADMIN' || session?.user?.role === 'SUPER_ADMIN';
   const [carsForSale, setCarsForSale] = useState<CarForSale[]>([]);
   const [activeTab, setActiveTab] = useState<'PENDING' | 'ACTIVE' | 'SOLD'>('ACTIVE');
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
@@ -334,12 +337,14 @@ export default function Mycars() {
           <h1 className="text-3xl font-bold text-gray-900">My Cars for Sale</h1>
           <p className="text-gray-500 mt-1">Manage your car listings</p>
         </div>
-        <Link href="/sell">
-          <Button className="bg-blue-600 hover:bg-blue-700">
-            Add New Car
-            <ChevronRight className="w-4 h-4 ml-2" />
-          </Button>
-        </Link>
+        {!isAdminRole && (
+          <Link href="/sell">
+            <Button className="bg-blue-600 hover:bg-blue-700">
+              Add New Car
+              <ChevronRight className="w-4 h-4 ml-2" />
+            </Button>
+          </Link>
+        )}
       </div>
 
       <div className="mb-8">
