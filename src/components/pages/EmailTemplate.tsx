@@ -1,109 +1,277 @@
-'use client'
-import { useState } from 'react';
-import { Check, Mail, ArrowRight, Building2 } from 'lucide-react';
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card';
-import { Separator } from '@/components/ui/separator';
-import { Badge } from '@/components/ui/badge';
-import Link from 'next/link';
+import {
+  Html,
+  Head,
+  Preview,
+  Body,
+  Container,
+  Section,
+  Text,
+  Hr,
+  Row,
+  Column,
+  Heading,
+  Link,
+  Font,
+} from "@react-email/components";
 
+import * as React from "react";
 
+interface VerificationEmailProps {
+  verificationUrl: string;
+}
 
-export default function EmailVerificationCard ({verificationUrl}:{verificationUrl:URL}) {
-  const [verified, setVerified] = useState(false);
-  
-  const handleVerify = () => {
-    setVerified(true);
-    // In a real application, this would trigger an API call
-  };
-  
+export default function VerificationEmail({ verificationUrl }: VerificationEmailProps) {
   return (
-    <div className="flex items-center justify-center w-full p-4">
-      <Card className="max-w-md w-full overflow-hidden shadow-xl border-gray-200">
-        <CardHeader className="bg-gradient-to-r from-blue-500 to-purple-600 p-6 space-y-4 border-b-0">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <div className="bg-white/10 backdrop-blur-md p-2 rounded-md">
-                <Building2 className="h-5 w-5 text-white" />
-              </div>
-              <div className="flex flex-col">
-                <span className="text-white font-bold text-lg tracking-tight">ATLAS</span>
-                <span className="text-blue-100 text-xs">DIGITAL SOLUTIONS</span>
-              </div>
-            </div>
-            <Badge className="bg-white/20 text-white hover:bg-white/30">Secure</Badge>
-          </div>
-          
-          <div className="text-center pt-4">
-            <div className="bg-white/20 backdrop-blur-sm rounded-full p-4 inline-flex items-center justify-center mb-4">
-              <Mail className="h-8 w-8 text-white" strokeWidth={2} />
-            </div>
-            <h2 className="text-white text-2xl font-bold">Verify Your Email</h2>
-            <p className="text-blue-100 mt-2">Please verify your email address to continue</p>
-          </div>
-        </CardHeader>
-        
-        <CardContent className="p-6 bg-white">
-          {verified ? (
-            <div className="text-center">
-              <Alert className="bg-green-50 text-green-700 border-green-200 mb-6">
-                <Check className="h-5 w-5" />
-                <AlertTitle>Email Verified Successfully</AlertTitle>
-                <AlertDescription>
-                  Thank you for verifying your email address.
-                </AlertDescription>
-              </Alert>
-              
-              <Button 
-                className="w-full bg-black text-white hover:bg-gray-800 font-medium"
-                onClick={() => window.location.href="#dashboard"}
-              >
-                Continue to Dashboard
-                <ArrowRight className="h-4 w-4 ml-2" />
-              </Button>
-            </div>
-          ) : (
-            <>
-              <p className="text-gray-700 mb-6">
-                We&apos;ve sent a verification link to <span className="font-semibold">john.doe@example.com</span>. 
-                Click the button below to verify instantly or check your inbox to complete verification.
-              </p>
-              
-              <Button 
-                className="w-full bg-black text-white hover:bg-gray-800 font-medium"
-                onClick={handleVerify}>
-                <Link href={verificationUrl}>
-                Verify Email Address
-                <ArrowRight className="h-4 w-4 ml-2" />
-                </Link>
-              </Button>
-              
-              <div className="mt-6 text-center">
-                <p className="text-gray-500 text-sm">
-                  Didn&apos;t receive an email? <a href="#" className="text-blue-600 font-medium hover:underline">Resend verification</a>
-                </p>
-              </div>
-            </>
-          )}
-        </CardContent>
-        
-        <CardFooter className="flex flex-col items-center p-0 bg-gray-50">
-          <div className="w-full px-6 py-4 flex items-center justify-center">
-            <p className="text-sm text-gray-600">Need help? <a href="#" className="text-blue-600 font-medium hover:underline">Contact Support</a></p>
-          </div>
-          
-          <Separator className="w-full" />
-          
-          <div className="w-full px-6 py-3 flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <Building2 className="h-4 w-4 text-gray-500" />
-              <span className="text-gray-500 text-xs font-medium">ATLAS</span>
-            </div>
-            <p className="text-xs text-gray-500">One Market Plaza, San Francisco, CA 94105</p>
-          </div>
-        </CardFooter>
-      </Card>
-    </div>
+    <Html lang="en">
+      <Head>
+        <title>Verify Your Email - Kaarbi</title>
+        <Font
+          fontFamily="Inter"
+          fallbackFontFamily="Arial"
+          webFont={{
+            url: "https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap",
+            format: "woff2",
+          }}
+          fontWeight={400}
+          fontStyle="normal"
+        />
+      </Head>
+      <Preview>Verify your email address to continue with Kaarbi</Preview>
+      <Body style={main}>
+        <Container style={container}>
+          {/* Header Section */}
+          <Section style={header}>
+            <Row>
+              <Column style={logoColumn}>
+                <Text style={logoText}>
+                  🏢 <strong>KAARBI</strong>
+                </Text>
+                <Text style={logoSubtext}>CAR MARKETPLACE</Text>
+              </Column>
+              <Column style={badgeColumn}>
+                <Text style={badge}>Secure</Text>
+              </Column>
+            </Row>
+            
+            <Text style={emailIcon}>📧</Text>
+            <Heading as="h1" style={headerTitle}>
+              Verify Your Email
+            </Heading>
+            <Text style={headerSubtitle}>
+              Please verify your email address to continue
+            </Text>
+          </Section>
+
+          {/* Content Section */}
+          <Section style={content}>
+            <Text style={contentText}>
+              We&apos;ve sent a verification link to your email. Click the button below to verify your account and get started with Kaarbi.
+            </Text>
+            
+            {verificationUrl && (
+              <table cellPadding="0" cellSpacing="0" border={0} style={{ margin: "0 auto 32px auto" }}>
+                <tr>
+                  <td 
+                    style={{
+                      backgroundColor: "#000000",
+                      borderRadius: "8px",
+                      textAlign: "center",
+                      padding: "16px 32px",
+                    }}
+                  >
+                    <a 
+                      href={verificationUrl} 
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      style={{
+                        color: "#ffffff",
+                        textDecoration: "none",
+                        fontWeight: "600",
+                        fontSize: "16px",
+                        lineHeight: "1.2",
+                        display: "block",
+                      }}
+                    >
+                      Verify Email Address →
+                    </a>
+                  </td>
+                </tr>
+              </table>
+            )}
+            
+            <Text style={helpText}>
+              Didn&apos;t receive an email? Check your spam folder or{" "}
+              <Link href="mailto:support@kaarbi.com" style={supportLink}>
+                contact support
+              </Link>
+              .
+            </Text>
+          </Section>
+
+          {/* Footer Section */}
+          <Hr style={hr} />
+          <Section style={footer}>
+            <Text style={footerText}>
+              Need help?{" "}
+              <Link href="mailto:support@kaarbi.com" style={footerLink}>
+                Contact Support
+              </Link>
+            </Text>
+            <Text style={footerCompany}>
+              <strong>KAARBI</strong> • Your trusted car marketplace
+            </Text>
+          </Section>
+        </Container>
+      </Body>
+    </Html>
   );
 }
+
+// Styles
+const main = {
+  backgroundColor: "#f8f9fa",
+  fontFamily: "Inter, Arial, sans-serif",
+  padding: "20px",
+  lineHeight: "1.6",
+};
+
+const container = {
+  maxWidth: "600px",
+  margin: "0 auto",
+  backgroundColor: "#ffffff",
+  borderRadius: "12px",
+  border: "1px solid #e5e7eb",
+  overflow: "hidden",
+};
+
+const header = {
+  backgroundColor: "#3b82f6",
+  padding: "40px 32px",
+  textAlign: "center" as const,
+  color: "#ffffff",
+};
+
+const logoColumn = {
+  textAlign: "left" as const,
+  verticalAlign: "top" as const,
+  width: "70%",
+};
+
+const badgeColumn = {
+  textAlign: "right" as const,
+  verticalAlign: "top" as const,
+  width: "30%",
+};
+
+const logoText = {
+  color: "#ffffff",
+  fontSize: "22px",
+  fontWeight: "700",
+  margin: "0 0 4px 0",
+  lineHeight: "1.2",
+};
+
+const logoSubtext = {
+  color: "#dbeafe",
+  fontSize: "11px",
+  margin: "0",
+  lineHeight: "1",
+  letterSpacing: "0.5px",
+};
+
+const badge = {
+  backgroundColor: "#1e40af",
+  color: "#ffffff",
+  padding: "8px 14px",
+  borderRadius: "20px",
+  fontSize: "11px",
+  fontWeight: "600",
+  display: "inline-block",
+  letterSpacing: "0.25px",
+};
+
+const emailIcon = {
+  fontSize: "56px",
+  margin: "32px 0 20px 0",
+  lineHeight: "1",
+};
+
+const headerTitle = {
+  color: "#ffffff",
+  fontSize: "32px",
+  fontWeight: "700",
+  margin: "0 0 12px 0",
+  lineHeight: "1.2",
+};
+
+const headerSubtitle = {
+  color: "#dbeafe",
+  fontSize: "18px",
+  margin: "0",
+  lineHeight: "1.4",
+  fontWeight: "400",
+};
+
+const content = {
+  padding: "40px 32px",
+  textAlign: "center" as const,
+};
+
+const contentText = {
+  color: "#374151",
+  fontSize: "16px",
+  lineHeight: "1.6",
+  margin: "0 0 32px 0",
+  fontWeight: "400",
+};
+
+
+
+const helpText = {
+  color: "#6b7280",
+  fontSize: "14px",
+  margin: "0",
+  lineHeight: "1.5",
+  fontWeight: "400",
+};
+
+const supportLink = {
+  color: "#3b82f6",
+  textDecoration: "underline",
+  fontWeight: "500",
+};
+
+const hr = {
+  borderColor: "#e5e7eb",
+  margin: "0",
+  borderWidth: "1px 0 0 0",
+  borderStyle: "solid",
+};
+
+const footer = {
+  backgroundColor: "#f9fafb",
+  padding: "32px",
+  textAlign: "center" as const,
+};
+
+const footerText = {
+  color: "#6b7280",
+  fontSize: "14px",
+  margin: "0 0 12px 0",
+  lineHeight: "1.5",
+  fontWeight: "400",
+};
+
+const footerLink = {
+  color: "#3b82f6",
+  textDecoration: "underline",
+  fontWeight: "500",
+};
+
+const footerCompany = {
+  color: "#9ca3af",
+  fontSize: "12px",
+  margin: "0",
+  lineHeight: "1.4",
+  fontWeight: "500",
+};

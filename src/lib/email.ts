@@ -1,6 +1,7 @@
 'use server'
 import nodemailer, { SentMessageInfo } from "nodemailer";
-
+import { render } from '@react-email/components';
+import VerificationEmail from '@/emails/verification-email';
 // Types
 interface EmailParams {
   to: string;
@@ -55,7 +56,8 @@ export const sendEmail = async ({ to, subject, text }: EmailParams): Promise<Ema
         ignoreTLS: true,
       });
 
-  const fromEmail = process.env.NODE_ENV === 'development' ? DEV_EMAIL : PROD_EMAIL;
+      const emailHtml = await render(VerificationEmail({ verificationUrl: text }));
+      const fromEmail = process.env.NODE_ENV === 'development' ? DEV_EMAIL : PROD_EMAIL;
 
   try {
     const info: SentMessageInfo = await transporter.sendMail({
@@ -63,6 +65,7 @@ export const sendEmail = async ({ to, subject, text }: EmailParams): Promise<Ema
       to: sanitizedEmail,
       subject: subject.trim(),
       text: text.trim(),
+      html:emailHtml
     });
 
     if (process.env.NODE_ENV === 'development') {
