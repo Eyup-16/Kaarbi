@@ -9,24 +9,28 @@ datasource db {
 }
 
 model User {
-  id            String    @id
-  name          String
-  email         String
-  emailVerified Boolean
-  image         String?
-  phone         String?
-  company       String?
-  role          UserRole  @default(USER)
-  bio           String?   @db.Text
-  location      String?
-  website       String?
-  password      String?
-  createdAt     DateTime
-  updatedAt     DateTime
-  sessions      Session[]
-  accounts      Account[]
-  favorites     Favorite[]
-  cars          Car[]
+  id              String      @id
+  name            String
+  email           String
+  emailVerified   Boolean
+  image           String?
+  phone           String?
+  company         String?
+  role            UserRole    @default(USER)
+  bio             String?     @db.Text
+  location        String?
+  website         String?
+  password        String?
+  status          UserStatus  @default(ACTIVE)
+  statusReason    String?
+  statusUpdatedAt DateTime?
+  statusUpdatedBy String?
+  createdAt       DateTime
+  updatedAt       DateTime
+  sessions        Session[]
+  accounts        Account[]
+  favorites       Favorite[]
+  cars            Car[]
 
   @@unique([email])
   @@map("user")
@@ -101,6 +105,13 @@ enum UserRole {
   ADMIN
   MODERATOR
   USER
+}
+
+enum UserStatus {
+  ACTIVE
+  BANNED
+  SUSPENDED
+  REMOVED
 }
 
 model Car {
