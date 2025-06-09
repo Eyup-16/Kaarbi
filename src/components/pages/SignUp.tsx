@@ -51,7 +51,6 @@ export default function SignUp() {
 	});
 
 	const onSubmit = async (data: z.infer<typeof signupSchema>) => {
-		console.log(`data: ${JSON.stringify(data)}`);
 		try {
 			setLoading(true);
 			await signUp.email({

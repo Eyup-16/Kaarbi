@@ -21,6 +21,9 @@ const ERROR_MESSAGES = {
   FORBIDDEN: "Access denied. Please verify your email first.",
   NOT_FOUND: "Resource not found.",
   VALIDATION_ERROR: "Please check your input and try again.",
+  USER_BANNED: "Your account has been banned.",
+  USER_SUSPENDED: "Your account is suspended.",
+  USER_REMOVED: "Your account has been removed.",
   DEFAULT: "An unexpected error occurred. Please try again."
 } as const;
 
@@ -36,13 +39,25 @@ const getErrorMessage = (error: ErrorResponse | null): string => {
   const status = error.response?.status;
   const message = error.response?.data?.message;
 
+  // Check for specific user status messages
+  if (message?.includes("banned")) {
+    return ERROR_MESSAGES.USER_BANNED;
+  }
+  if (message?.includes("suspended")) {
+    return ERROR_MESSAGES.USER_SUSPENDED;
+  }
+  if (message?.includes("removed")) {
+    return ERROR_MESSAGES.USER_REMOVED;
+  }
+
   switch (status) {
     case 400:
       return message || ERROR_MESSAGES.VALIDATION_ERROR;
     case 401:
       return ERROR_MESSAGES.UNAUTHORIZED;
     case 403:
-      return ERROR_MESSAGES.FORBIDDEN;
+      // For 403, prefer the specific message if available, otherwise default to forbidden
+      return message || ERROR_MESSAGES.FORBIDDEN;
     case 404:
       return ERROR_MESSAGES.NOT_FOUND;
     case 500:

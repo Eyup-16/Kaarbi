@@ -37,7 +37,6 @@ export default function SignIn() {
   });
 
   const onSubmit = async (data: z.infer<typeof loginSchema>) => {
-    console.log(data);
     try {
       await signIn.email({
         email: data.email,
@@ -56,11 +55,30 @@ export default function SignIn() {
             toast.success("Logged in successfully");
           },
           onError: (ctx) => {
+            // Extract error message from various possible locations
+            const errorMessage = ctx.error.message || 
+                                ctx.error.data?.message || 
+                                ctx.error.response?.data?.message ||
+                                ctx.error.body?.message;
+            
+            console.log("Sign-in error:", ctx.error); // Debug log
+            
             if (ctx.error.status === 401) {
-              toast.error("Invalid email or password")
+              toast.error(errorMessage || "Invalid email or password")
             }
             else if (ctx.error.status === 403) {
-              toast.error("Email has not been verified");
+              // Check if it's a status-specific message, otherwise default to email verification
+              if (errorMessage && (
+                errorMessage.includes("banned") || 
+                errorMessage.includes("suspended") || 
+                errorMessage.includes("removed")
+              )) {
+                toast.error(errorMessage);
+              } else {
+                toast.error("Email has not been verified");
+              }
+            } else {
+              toast.error(errorMessage || "An error occurred during sign in");
             }
           },
         },

@@ -5,6 +5,7 @@ import { sendEmail } from "./email";
 import { nextCookies } from "better-auth/next-js";
 import { admin } from "better-auth/plugins";
 import { createAccessControl } from "better-auth/plugins/access";
+import { createAuthMiddleware, APIError } from "better-auth/api";
 
 const prisma = new PrismaClient();
 
@@ -48,6 +49,54 @@ export const auth = betterAuth({
     database: prismaAdapter(prisma, {
         provider: "postgresql", 
     }),
+    hooks: {
+        before: createAuthMiddleware(async (ctx) => {
+            // Check user status before allowing sign-in
+            if (ctx.path === "/sign-in/email") {
+                const { email } = ctx.body as { email: string };
+                if (email) {
+                    const user = await prisma.user.findUnique({
+                        where: { email },
+                        select: { status: true, statusReason: true, statusUpdatedAt: true }
+                    });
+                    
+                    if (user && user.status !== 'ACTIVE') {
+                        let message = '';
+                        const daysSinceStatusUpdate = user.statusUpdatedAt 
+                            ? Math.floor((Date.now() - user.statusUpdatedAt.getTime()) / (1000 * 60 * 60 * 24))
+                            : 0;
+                        
+                        switch (user.status) {
+                            case 'BANNED':
+                                message = 'Your account has been banned';
+                                break;
+                            case 'SUSPENDED':
+                                message = 'Your account is suspended';
+                                break;
+                            case 'REMOVED':
+                                // Only show message for 3 days
+                                if (daysSinceStatusUpdate <= 3) {
+                                    message = 'Your account has been removed';
+                                } else {
+                                    // Allow normal sign-in flow (they can create new account)
+                                    return;
+                                }
+                                break;
+                        }
+                        
+                        if (message) {
+                            if (user.statusReason) {
+                                message += `. Reason: ${user.statusReason}`;
+                            }
+                            throw new APIError("FORBIDDEN", {
+                                message: message
+                            });
+                        }
+                    }
+                }
+            }
+        })
+    },
     emailAndPassword:{
         enabled:true,
         requireEmailVerification:true,
@@ -68,12 +117,13 @@ export const auth = betterAuth({
             enabled: false, // Disable cookie caching for security
         },
         // Only include essential user data in the session
-        select: {
+        userFields: {
             id: true,
             email: true,
             name: true,
             role: true,
-            image: true
+            image: true,
+            status: true
         }
     },
     
@@ -119,7 +169,10 @@ export const auth = betterAuth({
             adminRoles: ["SUPER_ADMIN", "ADMIN", "MODERATOR"],
             impersonationSessionDuration: 60 * 60, // 1 hour
             defaultBanReason: "Violation of terms of service",
-            bannedUserMessage: "Your account has been banned. Please contact support if you believe this is an error."
+            bannedUserMessage: "Your account has been banned. Please contact support if you believe this is an error.",
+            disableSignup: false,
+            disableRevoke: false,
+            sendPasswordResetEmail: false
         })
     ],
     socialProviders: {

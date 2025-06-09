@@ -18,10 +18,38 @@ export async function requireSuperAdmin() {
   return session.user;
 }
 
-export async function withSuperAdmin(handler: () => Promise<NextResponse>): Promise<NextResponse> {
+export async function withSuperAdmin(handler: (user?: unknown) => Promise<NextResponse>): Promise<NextResponse> {
   try {
-    await requireSuperAdmin();
-    return await handler();
+    const user = await requireSuperAdmin();
+    return await handler(user);
+  } catch (error) {
+    return NextResponse.json(
+      { error: error instanceof Error ? error.message : "Access denied" },
+      { status: 403 }
+    );
+  }
+}
+
+export async function requireAdminAccess() {
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  });
+
+  if (!session?.user) {
+    throw new Error("Authentication required");
+  }
+
+  if (!session.user.role || !["SUPER_ADMIN", "ADMIN"].includes(session.user.role as string)) {
+    throw new Error("Admin access required");
+  }
+
+  return session.user;
+}
+
+export async function withAdminAccess(handler: (user: { id: string; role?: string | null; email: string; name: string }) => Promise<NextResponse>): Promise<NextResponse> {
+  try {
+    const user = await requireAdminAccess();
+    return await handler(user);
   } catch (error) {
     return NextResponse.json(
       { error: error instanceof Error ? error.message : "Access denied" },
