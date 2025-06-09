@@ -3,7 +3,7 @@
 import { useSession } from "@/lib/auth-client";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { LoaderCircle, Car, Heart, Plus, Eye, Calendar, MapPin } from "lucide-react";
+import { LoaderCircle, Car, Heart, Plus, Eye, Calendar} from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -69,7 +69,7 @@ const Dashboard = () => {
           Welcome back, {session.user.name}!
         </h1>
         <p className="text-gray-600 text-sm sm:text-base">
-          Here's what's happening with your cars and activity
+          Here&apos;s what&apos;s happening with your cars and activity
         </p>
       </div>
 
@@ -82,7 +82,7 @@ const Dashboard = () => {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{stats.totalCars}</div>
-            <p className="text-xs text-muted-foreground">Cars you're selling</p>
+            <p className="text-xs text-muted-foreground">Cars you&apos;re selling</p>
           </CardContent>
         </Card>
 
@@ -93,7 +93,7 @@ const Dashboard = () => {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{stats.favoriteCars}</div>
-            <p className="text-xs text-muted-foreground">Cars you've saved</p>
+            <p className="text-xs text-muted-foreground">Cars you&apos;ve saved</p>
           </CardContent>
         </Card>
 
@@ -158,21 +158,10 @@ const Dashboard = () => {
               <span className="text-sm text-gray-600">Email:</span>
               <span className="text-sm font-medium">{session.user.email}</span>
             </div>
-            {session.user.phone && (
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-gray-600">Phone:</span>
-                <span className="text-sm font-medium">{session.user.phone}</span>
-              </div>
-            )}
-            {session.user.location && (
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-gray-600">Location:</span>
-                <span className="text-sm font-medium flex items-center gap-1">
-                  <MapPin className="h-3 w-3" />
-                  {session.user.location}
-                </span>
-              </div>
-            )}
+            <div className="flex items-center justify-between">
+              <span className="text-sm text-gray-600">Role:</span>
+              <span className="text-sm font-medium">{session.user.role || 'User'}</span>
+            </div>
             <Link href="/profile">
               <Button className="w-full mt-4" variant="outline">
                 Edit Profile
