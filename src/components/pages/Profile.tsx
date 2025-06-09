@@ -158,7 +158,7 @@ export default function ProfileEnhanced() {
 
       fetchUserData();
     }
-  }, [session]);
+  }, [session,userData]);
 
   useEffect(() => {
     const fetchConnectedAccounts = async () => {
@@ -396,15 +396,15 @@ export default function ProfileEnhanced() {
   }
 
   return (
-    <div className="container max-w-7xl mx-auto py-8 px-4">
+    <div className="container max-w-7xl mx-auto py-4 sm:py-8 px-3 sm:px-4">
       {/* Header */}
-      <div className="flex items-center justify-between mb-8">
-        <div>
-          <h1 className="text-4xl font-bold text-gray-900 mb-2">Profile Management</h1>
-          <p className="text-gray-500">Manage your account settings and preferences with admin-level controls</p>
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-6 sm:mb-8 gap-4">
+        <div className="text-center sm:text-left">
+          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 mb-2">Profile Management</h1>
+          <p className="text-gray-500 text-sm sm:text-base">Manage your account settings and preferences</p>
         </div>
-        <div className="flex items-center gap-3">
-          <Badge variant="outline" className="px-3 py-2 bg-blue-50 text-blue-700 border-blue-200">
+        <div className="flex items-center justify-center sm:justify-start gap-3">
+          <Badge variant="outline" className="px-3 py-2 bg-blue-50 text-blue-700 border-blue-200 text-sm">
             <User className="w-4 h-4 mr-2" />
             PROFILE
           </Badge>
@@ -412,106 +412,114 @@ export default function ProfileEnhanced() {
       </div>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-        <Card className="p-6 hover:shadow-lg transition-all duration-300">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-6 sm:mb-8">
+        <Card className="p-4 sm:p-6 hover:shadow-lg transition-all duration-300">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-gray-600">Profile Complete</p>
-              <p className={`text-3xl font-bold ${getCompletenessColor(profileStats.profileCompleteness).split(' ')[0]}`}>
+              <p className="text-xs sm:text-sm font-medium text-gray-600">Profile Complete</p>
+              <p className={`text-2xl sm:text-3xl font-bold ${getCompletenessColor(profileStats.profileCompleteness).split(' ')[0]}`}>
                 {profileStats.profileCompleteness}%
               </p>
             </div>
             {(() => {
               const Icon = getCompletenessIcon(profileStats.profileCompleteness);
-              return <Icon className={`w-12 h-12 p-2 rounded-lg ${getCompletenessColor(profileStats.profileCompleteness)}`} />;
+              return <Icon className={`w-8 h-8 sm:w-12 sm:h-12 p-1 sm:p-2 rounded-lg ${getCompletenessColor(profileStats.profileCompleteness)}`} />;
             })()}
           </div>
         </Card>
         
-        <Card className="p-6 hover:shadow-lg transition-all duration-300">
+        <Card className="p-4 sm:p-6 hover:shadow-lg transition-all duration-300">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-gray-600">Connected Accounts</p>
-              <p className="text-3xl font-bold text-gray-900">{profileStats.connectedAccounts}</p>
+              <p className="text-xs sm:text-sm font-medium text-gray-600">Connected Accounts</p>
+              <p className="text-2xl sm:text-3xl font-bold text-gray-900">{profileStats.connectedAccounts}</p>
             </div>
-            <Link2 className="w-12 h-12 text-purple-600 bg-purple-50 p-2 rounded-lg" />
+            <Link2 className="w-8 h-8 sm:w-12 sm:h-12 text-purple-600 bg-purple-50 p-1 sm:p-2 rounded-lg" />
           </div>
         </Card>
         
-        <Card className="p-6 hover:shadow-lg transition-all duration-300">
+        <Card className="p-4 sm:p-6 hover:shadow-lg transition-all duration-300">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-gray-600">Account Age</p>
-              <p className="text-3xl font-bold text-gray-900">{profileStats.accountAge}d</p>
+              <p className="text-xs sm:text-sm font-medium text-gray-600">Account Age</p>
+              <p className="text-2xl sm:text-3xl font-bold text-gray-900">{profileStats.accountAge}d</p>
             </div>
-            <Activity className="w-12 h-12 text-indigo-600 bg-indigo-50 p-2 rounded-lg" />
+            <Activity className="w-8 h-8 sm:w-12 sm:h-12 text-indigo-600 bg-indigo-50 p-1 sm:p-2 rounded-lg" />
           </div>
         </Card>
         
-        <Card className="p-6 hover:shadow-lg transition-all duration-300">
+        <Card className="p-4 sm:p-6 hover:shadow-lg transition-all duration-300">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-gray-600">Last Login</p>
-              <p className="text-lg font-bold text-gray-900">{profileStats.lastLogin}</p>
+              <p className="text-xs sm:text-sm font-medium text-gray-600">Last Login</p>
+              <p className="text-base sm:text-lg font-bold text-gray-900">{profileStats.lastLogin}</p>
             </div>
-            <Clock className="w-12 h-12 text-green-600 bg-green-50 p-2 rounded-lg" />
+            <Clock className="w-8 h-8 sm:w-12 sm:h-12 text-green-600 bg-green-50 p-1 sm:p-2 rounded-lg" />
           </div>
         </Card>
       </div>
 
       {/* Main Content */}
-      <Card className="p-6 shadow-lg">
+      <Card className="p-4 sm:p-6 shadow-lg">
         <Tabs value={activeTab} onValueChange={setActiveTab}>
-          <div className="flex items-center justify-between mb-6">
-            <TabsList className="bg-gray-100">
-              <TabsTrigger value="overview" className="flex items-center gap-2">
-                <Activity className="w-4 h-4" />
-                Overview
-              </TabsTrigger>
-              <TabsTrigger value="account" className="flex items-center gap-2">
-                <User className="w-4 h-4" />
-                Account Info
-              </TabsTrigger>
-              <TabsTrigger value="security" className="flex items-center gap-2">
-                <Shield className="w-4 h-4" />
-                Security
-              </TabsTrigger>
-              <TabsTrigger value="privacy" className="flex items-center gap-2">
-                <Eye className="w-4 h-4" />
-                Privacy
-              </TabsTrigger>
-              <TabsTrigger value="danger" className="flex items-center gap-2">
-                <Trash2 className="w-4 h-4" />
-                Danger Zone
-              </TabsTrigger>
-            </TabsList>
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-4 sm:mb-6 gap-4">
+            <div className="overflow-x-auto">
+              <TabsList className="bg-gray-100 w-full sm:w-auto">
+                <TabsTrigger value="overview" className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm px-2 sm:px-3">
+                  <Activity className="w-3 h-3 sm:w-4 sm:h-4" />
+                  <span className="hidden xs:inline">Overview</span>
+                  <span className="xs:hidden">Home</span>
+                </TabsTrigger>
+                <TabsTrigger value="account" className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm px-2 sm:px-3">
+                  <User className="w-3 h-3 sm:w-4 sm:h-4" />
+                  <span className="hidden xs:inline">Account Info</span>
+                  <span className="xs:hidden">Account</span>
+                </TabsTrigger>
+                <TabsTrigger value="security" className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm px-2 sm:px-3">
+                  <Shield className="w-3 h-3 sm:w-4 sm:h-4" />
+                  <span className="hidden xs:inline">Security</span>
+                  <span className="xs:hidden">🔒</span>
+                </TabsTrigger>
+                <TabsTrigger value="privacy" className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm px-2 sm:px-3">
+                  <Eye className="w-3 h-3 sm:w-4 sm:h-4" />
+                  <span className="hidden xs:inline">Privacy</span>
+                  <span className="xs:hidden">👁</span>
+                </TabsTrigger>
+                <TabsTrigger value="danger" className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm px-2 sm:px-3">
+                  <Trash2 className="w-3 h-3 sm:w-4 sm:h-4" />
+                  <span className="hidden xs:inline">Danger Zone</span>
+                  <span className="xs:hidden">⚠️</span>
+                </TabsTrigger>
+              </TabsList>
+            </div>
             
             {activeTab === "account" && !isEditing && (
               <Button 
                 variant="outline" 
                 onClick={handleEdit} 
-                className="flex items-center gap-2"
+                className="flex items-center gap-2 w-full sm:w-auto text-xs sm:text-sm"
               >
-                <Edit2 className="w-4 h-4" />
-                Edit Profile
+                <Edit2 className="w-3 h-3 sm:w-4 sm:h-4" />
+                <span className="hidden sm:inline">Edit Profile</span>
+                <span className="sm:hidden">Edit</span>
               </Button>
             )}
           </div>
 
           {/* Overview Tab */}
-          <TabsContent value="overview" className="space-y-6">
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <TabsContent value="overview" className="space-y-4 sm:space-y-6">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
               {/* Profile Card */}
-              <Card className="lg:col-span-2 p-6">
+              <Card className="lg:col-span-2 p-4 sm:p-6">
                 <CardHeader className="pb-4">
                   <CardTitle className="flex items-center gap-2">
                     <User className="w-5 h-5" />
                     Profile Summary
                   </CardTitle>
                 </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="flex items-center gap-4">
-                    <div className="w-16 h-16 rounded-full overflow-hidden border-2 border-gray-200">
+                <CardContent className="space-y-3 sm:space-y-4">
+                  <div className="flex items-center gap-3 sm:gap-4">
+                    <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-full overflow-hidden border-2 border-gray-200">
                       {(previewImage || userData.image) ? (
                         <Image 
                           src={previewImage || userData.image} 
@@ -527,8 +535,8 @@ export default function ProfileEnhanced() {
                       )}
                     </div>
                     <div>
-                      <h3 className="text-xl font-semibold text-gray-900">{userData.name}</h3>
-                      <p className="text-gray-600">{userData.email}</p>
+                      <h3 className="text-lg sm:text-xl font-semibold text-gray-900">{userData.name}</h3>
+                      <p className="text-gray-600 text-sm sm:text-base">{userData.email}</p>
                       <div className="flex items-center gap-2 mt-1">
                         <Badge variant="outline" className="text-xs">
                           {session?.user?.role || "USER"}
@@ -545,7 +553,7 @@ export default function ProfileEnhanced() {
                   
                   <Separator />
                   
-                  <div className="grid grid-cols-2 gap-4 text-sm">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 text-xs sm:text-sm">
                     <div>
                       <p className="text-gray-600">Company</p>
                       <p className="font-medium">{userData.company || "Not provided"}</p>
@@ -568,8 +576,8 @@ export default function ProfileEnhanced() {
                     <>
                       <Separator />
                       <div>
-                        <p className="text-gray-600 text-sm mb-2">Bio</p>
-                        <p className="text-gray-900 text-sm">{userData.bio}</p>
+                        <p className="text-gray-600 text-xs sm:text-sm mb-2">Bio</p>
+                        <p className="text-gray-900 text-xs sm:text-sm">{userData.bio}</p>
                       </div>
                     </>
                   )}
@@ -577,36 +585,36 @@ export default function ProfileEnhanced() {
               </Card>
               
               {/* Quick Actions */}
-              <Card className="p-6">
+              <Card className="p-4 sm:p-6">
                 <CardHeader className="pb-4">
                   <CardTitle className="flex items-center gap-2">
                     <Settings className="w-5 h-5" />
                     Quick Actions
                   </CardTitle>
                 </CardHeader>
-                <CardContent className="space-y-3">
+                <CardContent className="space-y-2 sm:space-y-3">
                   <Button 
                     variant="outline" 
-                    className="w-full justify-start"
+                    className="w-full justify-start text-xs sm:text-sm"
                     onClick={() => setActiveTab("account")}
                   >
-                    <User className="w-4 h-4 mr-2" />
+                    <User className="w-3 h-3 sm:w-4 sm:h-4 mr-2" />
                     Edit Profile
                   </Button>
                   <Button 
                     variant="outline" 
-                    className="w-full justify-start"
+                    className="w-full justify-start text-xs sm:text-sm"
                     onClick={() => setActiveTab("security")}
                   >
-                    <Shield className="w-4 h-4 mr-2" />
+                    <Shield className="w-3 h-3 sm:w-4 sm:h-4 mr-2" />
                     Security Settings
                   </Button>
                   <Button 
                     variant="outline" 
-                    className="w-full justify-start"
+                    className="w-full justify-start text-xs sm:text-sm"
                     onClick={() => setActiveTab("privacy")}
                   >
-                    <Eye className="w-4 h-4 mr-2" />
+                    <Eye className="w-3 h-3 sm:w-4 sm:h-4 mr-2" />
                     Privacy Controls
                   </Button>
                 </CardContent>
@@ -662,26 +670,26 @@ export default function ProfileEnhanced() {
                 </div>
 
                 {/* Form Fields */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div className="flex items-center gap-4 p-4 rounded-lg hover:bg-gray-50 transition-all duration-200 border border-gray-100">
-                    <div className="p-2 bg-gray-100 rounded-full">
-                      <User className="w-5 h-5 text-gray-700" />
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
+                  <div className="flex items-center gap-3 sm:gap-4 p-3 sm:p-4 rounded-lg hover:bg-gray-50 transition-all duration-200 border border-gray-100">
+                    <div className="p-1.5 sm:p-2 bg-gray-100 rounded-full">
+                      <User className="w-4 h-4 sm:w-5 sm:h-5 text-gray-700" />
                     </div>
                     {isEditing ? (
                       <div className="flex-1">
-                        <Label htmlFor="name" className="text-sm font-medium text-gray-700">Name</Label>
+                        <Label htmlFor="name" className="text-xs sm:text-sm font-medium text-gray-700">Name</Label>
                         <Input
                           id="name"
                           value={userData.name}
                           onChange={(e) => setUserData({ ...userData, name: e.target.value })}
                           disabled={isLoading}
-                          className="mt-1 focus:ring-2 focus:ring-blue-400 border-gray-200"
+                          className="mt-1 focus:ring-2 focus:ring-blue-400 border-gray-200 text-sm"
                         />
                       </div>
                     ) : (
                       <div className="flex-1">
-                        <Label className="text-sm font-medium text-gray-700">Name</Label>
-                        <p className="text-gray-900 mt-1">{userData.name}</p>
+                        <Label className="text-xs sm:text-sm font-medium text-gray-700">Name</Label>
+                        <p className="text-gray-900 mt-1 text-sm sm:text-base">{userData.name}</p>
                       </div>
                     )}
                   </div>

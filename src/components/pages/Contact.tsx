@@ -80,18 +80,18 @@ export default function ContactPage() {
   }
 
   return (
-    <div className="container mx-auto px-4 py-8 max-w-7xl">
-      <div className="flex flex-col md:flex-row gap-8">
+    <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 max-w-7xl">
+      <div className="flex flex-col lg:flex-row gap-6 sm:gap-8">
         {/* Sidebar Navigation */}
-        <div className="md:w-64 flex-shrink-0">
-          <div className="sticky top-8 bg-white rounded-lg shadow-sm p-4">
-            <h2 className="text-lg font-semibold mb-4">Table of Contents</h2>
-            <nav className="space-y-2">
+        <div className="lg:w-64 flex-shrink-0">
+          <div className="sticky top-4 lg:top-8 bg-white rounded-lg shadow-sm p-3 sm:p-4">
+            <h2 className="text-base sm:text-lg font-semibold mb-3 sm:mb-4">Table of Contents</h2>
+            <nav className="space-y-1 sm:space-y-2">
               {sections.map((section) => (
                 <button
                   key={section.id}
                   onClick={() => scrollToSection(section.id)}
-                  className={`block w-full text-left px-3 py-2 rounded-md transition-colors ${
+                  className={`block w-full text-left px-2 sm:px-3 py-1 sm:py-2 rounded-md transition-colors text-sm sm:text-base ${
                     activeSection === section.id
                       ? "bg-gray-100 text-black"
                       : "hover:bg-gray-50"

@@ -85,37 +85,37 @@ function CarsFilter({ filters, onFilterChange }: { filters: FilterState; onFilte
   };
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Filter Cars</CardTitle>
+    <Card className="sticky top-4">
+      <CardHeader className="pb-4">
+        <CardTitle className="text-lg sm:text-xl">Filter Cars</CardTitle>
       </CardHeader>
-      <CardContent className="space-y-6">
+      <CardContent className="space-y-4 sm:space-y-6">
         <div className="space-y-2">
-          <Label htmlFor="search">Search</Label>
+          <Label htmlFor="search" className="text-sm font-medium">Search</Label>
           <Input
             id="search"
-            placeholder="Search by make, model, or keyword"
-            className="w-full"
+            placeholder="Search by make, model..."
+            className="w-full text-sm"
             value={filters.search}
             onChange={handleSearchChange}
           />
         </div>
 
         <div className="space-y-2">
-          <Label>Price Range</Label>
+          <Label className="text-sm font-medium">Price Range</Label>
           <div className="flex items-center gap-2">
             <Input
               type="number"
               placeholder="Min"
-              className="w-full"
+              className="w-full text-sm"
               value={filters.minPrice}
               onChange={(e) => handlePriceChange('min', e.target.value)}
             />
-            <span>-</span>
+            <span className="text-sm text-gray-500">-</span>
             <Input
               type="number"
               placeholder="Max"
-              className="w-full"
+              className="w-full text-sm"
               value={filters.maxPrice}
               onChange={(e) => handlePriceChange('max', e.target.value)}
             />
@@ -123,9 +123,9 @@ function CarsFilter({ filters, onFilterChange }: { filters: FilterState; onFilte
         </div>
 
         <div className="space-y-2">
-          <Label>Year</Label>
+          <Label className="text-sm font-medium">Year</Label>
           <Select value={filters.year} onValueChange={handleYearChange}>
-            <SelectTrigger>
+            <SelectTrigger className="text-sm">
               <SelectValue placeholder="Select year" />
             </SelectTrigger>
             <SelectContent>
@@ -140,9 +140,9 @@ function CarsFilter({ filters, onFilterChange }: { filters: FilterState; onFilte
         </div>
 
         <div className="space-y-2">
-          <Label>Condition</Label>
+          <Label className="text-sm font-medium">Condition</Label>
           <Select value={filters.condition} onValueChange={handleConditionChange}>
-            <SelectTrigger>
+            <SelectTrigger className="text-sm">
               <SelectValue placeholder="Select condition" />
             </SelectTrigger>
             <SelectContent>
@@ -154,7 +154,7 @@ function CarsFilter({ filters, onFilterChange }: { filters: FilterState; onFilte
         </div>
 
         <div className="space-y-2">
-          <Label>Mileage</Label>
+          <Label className="text-sm font-medium">Mileage</Label>
           <Slider
             value={filters.mileage}
             onValueChange={handleMileageChange}
@@ -162,14 +162,14 @@ function CarsFilter({ filters, onFilterChange }: { filters: FilterState; onFilte
             step={1000}
             className="w-full"
           />
-          <div className="flex justify-between text-sm text-gray-500">
+          <div className="flex justify-between text-xs sm:text-sm text-gray-500">
             <span>{filters.mileage[0].toLocaleString()} mi</span>
             <span>{filters.mileage[1].toLocaleString()} mi</span>
           </div>
         </div>
 
         <button 
-          className="w-full bg-primary text-primary-foreground hover:bg-primary/90 px-4 py-2 rounded-md"
+          className="w-full bg-primary text-primary-foreground hover:bg-primary/90 px-4 py-2 rounded-md text-sm sm:text-base"
           onClick={() => onFilterChange(filters)}
         >
           Apply Filters
@@ -182,25 +182,25 @@ function CarsFilter({ filters, onFilterChange }: { filters: FilterState; onFilte
 function CarsList({ cars, loading }: { cars: Car[]; loading: boolean }) {
   if (loading) {
     return (
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6">
         {[...Array(6)].map((_, index) => (
           <Card key={index} className="overflow-hidden">
             <CardHeader className="p-0">
-              <div className="w-full h-48 bg-gray-200 animate-pulse" />
+              <div className="w-full h-40 sm:h-48 bg-gray-200 animate-pulse" />
             </CardHeader>
-            <CardContent className="p-4 space-y-2">
-              <div className="h-6 bg-gray-200 animate-pulse rounded" />
-              <div className="h-4 bg-gray-200 animate-pulse rounded w-2/3" />
-              <div className="h-8 bg-gray-200 animate-pulse rounded w-1/2" />
+            <CardContent className="p-3 sm:p-4 space-y-2">
+              <div className="h-5 sm:h-6 bg-gray-200 animate-pulse rounded" />
+              <div className="h-3 sm:h-4 bg-gray-200 animate-pulse rounded w-2/3" />
+              <div className="h-6 sm:h-8 bg-gray-200 animate-pulse rounded w-1/2" />
               <div className="grid grid-cols-2 gap-2">
-                <div className="h-4 bg-gray-200 animate-pulse rounded" />
-                <div className="h-4 bg-gray-200 animate-pulse rounded" />
-                <div className="h-4 bg-gray-200 animate-pulse rounded" />
-                <div className="h-4 bg-gray-200 animate-pulse rounded" />
+                <div className="h-3 sm:h-4 bg-gray-200 animate-pulse rounded" />
+                <div className="h-3 sm:h-4 bg-gray-200 animate-pulse rounded" />
+                <div className="h-3 sm:h-4 bg-gray-200 animate-pulse rounded" />
+                <div className="h-3 sm:h-4 bg-gray-200 animate-pulse rounded" />
               </div>
             </CardContent>
-            <CardFooter className="p-4 pt-0">
-              <div className="w-full h-10 bg-gray-200 animate-pulse rounded" />
+            <CardFooter className="p-3 sm:p-4 pt-0">
+              <div className="w-full h-8 sm:h-10 bg-gray-200 animate-pulse rounded" />
             </CardFooter>
           </Card>
         ))}
@@ -210,54 +210,54 @@ function CarsList({ cars, loading }: { cars: Car[]; loading: boolean }) {
 
   if (cars.length === 0) {
     return (
-      <div className="text-center py-12">
-        <h3 className="text-xl font-semibold mb-2">No cars found</h3>
-        <p className="text-gray-600">Try adjusting your filters to see more results.</p>
+      <div className="text-center py-8 sm:py-12 px-4">
+        <h3 className="text-lg sm:text-xl font-semibold mb-2">No cars found</h3>
+        <p className="text-sm sm:text-base text-gray-600">Try adjusting your filters to see more results.</p>
       </div>
     );
   }
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6">
       {cars.map((car) => (
         <Link key={car.id} href={`/cars/${car.id}`}>
           <Card className="overflow-hidden hover:shadow-lg transition-shadow cursor-pointer">
             <CardHeader className="p-0">
-              <div className="relative w-full h-48">
+              <div className="relative w-full h-40 sm:h-48">
                 <Image
                   src={car.imageUrl}
                   alt={car.title}
                   fill
                   className="object-cover"
-                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                  sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
                 />
                 <Badge 
                   variant={car.condition === "new" ? "default" : "secondary"}
-                  className="absolute top-2 right-2"
+                  className="absolute top-2 right-2 text-xs sm:text-sm"
                 >
                   {car.condition}
                 </Badge>
               </div>
             </CardHeader>
-            <CardContent className="p-4">
+            <CardContent className="p-3 sm:p-4">
               <div className="flex justify-between items-start mb-2">
-                <div>
-                  <h3 className="font-semibold text-lg">{car.title}</h3>
-                  <p className="text-sm text-gray-600">{car.location}</p>
+                <div className="min-w-0 flex-1">
+                  <h3 className="font-semibold text-base sm:text-lg truncate">{car.title}</h3>
+                  <p className="text-xs sm:text-sm text-gray-600 truncate">{car.location}</p>
                 </div>
               </div>
-              <p className="text-2xl font-bold text-primary mb-2">
+              <p className="text-lg sm:text-2xl font-bold text-primary mb-2">
                 ${car.price.toLocaleString()}
               </p>
-              <div className="grid grid-cols-2 gap-2 text-sm text-gray-600">
-                <div>Year: {car.year}</div>
-                <div>Mileage: {car.mileage.toLocaleString()} mi</div>
-                <div>Make: {car.make}</div>
-                <div>Model: {car.model}</div>
+              <div className="grid grid-cols-2 gap-1 sm:gap-2 text-xs sm:text-sm text-gray-600">
+                <div className="truncate">Year: {car.year}</div>
+                <div className="truncate">Mileage: {car.mileage.toLocaleString()} mi</div>
+                <div className="truncate">Make: {car.make}</div>
+                <div className="truncate">Model: {car.model}</div>
               </div>
             </CardContent>
-            <CardFooter className="p-4 pt-0">
-              <div className="w-full bg-primary text-primary-foreground hover:bg-primary/90 px-4 py-2 rounded-md text-center">
+            <CardFooter className="p-3 sm:p-4 pt-0">
+              <div className="w-full bg-primary text-primary-foreground hover:bg-primary/90 px-4 py-2 rounded-md text-center text-sm sm:text-base">
                 View Details
               </div>
             </CardFooter>
@@ -358,8 +358,8 @@ export default function Cars() {
   }
 
   return (
-    <div className="container mx-auto py-8">
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+    <div className="container mx-auto py-4 sm:py-6 lg:py-8 px-4 sm:px-6 lg:px-8">
+      <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 sm:gap-6 lg:gap-8">
         <div className="lg:col-span-1">
           <CarsFilter filters={filters} onFilterChange={setFilters} />
         </div>

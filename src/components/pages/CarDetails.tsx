@@ -270,106 +270,107 @@ export default function CarDetails({ id }: CarDetailsProps) {
   };
 
   return (
-    <div className="container mx-auto px-4 py-12 max-w-7xl">
+    <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 lg:py-12 max-w-7xl">
       {/* Header */}
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-12">
-        <div className="space-y-2">
-          <h1 className="text-4xl font-bold tracking-tight">{carData.title}</h1>
-          <div className="flex items-center gap-3 text-gray-600">
-            <p className="flex items-center gap-2">
-              <Calendar className="h-4 w-4" />
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 sm:gap-6 mb-6 sm:mb-8 lg:mb-12">
+        <div className="space-y-1 sm:space-y-2 min-w-0 flex-1">
+          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight">{carData.title}</h1>
+          <div className="flex items-center gap-2 sm:gap-3 text-sm sm:text-base text-gray-600">
+            <p className="flex items-center gap-1 sm:gap-2">
+              <Calendar className="h-3 w-3 sm:h-4 sm:w-4" />
               {carData.year}
             </p>
             <span>•</span>
-            <p>{carData.location}</p>
+            <p className="truncate">{carData.location}</p>
           </div>
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
           {!isAdminRole && (
             <Button 
               variant="outline" 
-              size="icon" 
+              size={typeof window !== 'undefined' && window.innerWidth < 640 ? "sm" : "icon"}
               onClick={handleFavorite}
               className="hover:bg-red-50 transition-colors"
             >
-              <Heart className={`h-5 w-5 transition-all duration-200 ${isFavorite ? "fill-red-500 text-red-500 scale-110" : ""}`} />
+              <Heart className={`h-4 w-4 sm:h-5 sm:w-5 transition-all duration-200 ${isFavorite ? "fill-red-500 text-red-500 scale-110" : ""}`} />
             </Button>
           )}
           <Button 
             variant="outline" 
-            size="icon"
+            size={typeof window !== 'undefined' && window.innerWidth < 640 ? "sm" : "icon"}
             onClick={handleShare}
             disabled={isSharing}
             className="hover:bg-gray-50 transition-colors"
           >
             {isSharing ? (
-              <div className="h-5 w-5 animate-spin rounded-full border-2 border-gray-300 border-t-gray-600" />
+              <div className="h-4 w-4 sm:h-5 sm:w-5 animate-spin rounded-full border-2 border-gray-300 border-t-gray-600" />
             ) : (
-              <Share2 className="h-5 w-5" />
+              <Share2 className="h-4 w-4 sm:h-5 sm:w-5" />
             )}
           </Button>
         </div>
       </div>
 
       {/* Main Content */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8 lg:gap-12">
         {/* Left Column - Images and Details */}
-        <div className="lg:col-span-2 space-y-12">
+        <div className="lg:col-span-2 space-y-6 sm:space-y-8 lg:space-y-12">
           {/* Image Gallery */}
-          <div className="space-y-6">
-            <div className="relative h-[500px] rounded-xl overflow-hidden shadow-lg group">
+          <div className="space-y-4 sm:space-y-6">
+            <div className="relative h-[250px] sm:h-[350px] lg:h-[500px] rounded-xl overflow-hidden shadow-lg group">
               <Image
                 src={carImages[selectedImage]}
                 alt={carData.title}
                 fill
                 className="object-cover transition-transform duration-300 group-hover:scale-105"
                 priority
+                sizes="(max-width: 640px) 100vw, (max-width: 1024px) 66vw, 50vw"
               />
             </div>
           </div>
 
           {/* Tabs */}
           <Tabs defaultValue="overview" className="w-full">
-            <TabsList className="grid w-full grid-cols-3 p-1 bg-gray-100/50 rounded-lg">
-              <TabsTrigger value="overview" className="data-[state=active]:bg-white data-[state=active]:shadow-sm transition-all">
+            <TabsList className="grid w-full grid-cols-3 p-1 bg-gray-100/50 rounded-lg text-sm sm:text-base">
+              <TabsTrigger value="overview" className="data-[state=active]:bg-white data-[state=active]:shadow-sm transition-all py-2 px-3 sm:py-3 sm:px-4">
                 Overview
               </TabsTrigger>
-              <TabsTrigger value="specifications" className="data-[state=active]:bg-white data-[state=active]:shadow-sm transition-all">
-                Specifications
+              <TabsTrigger value="specifications" className="data-[state=active]:bg-white data-[state=active]:shadow-sm transition-all py-2 px-3 sm:py-3 sm:px-4">
+                Specs
               </TabsTrigger>
-              <TabsTrigger value="features" className="data-[state=active]:bg-white data-[state=active]:shadow-sm transition-all">
+              <TabsTrigger value="features" className="data-[state=active]:bg-white data-[state=active]:shadow-sm transition-all py-2 px-3 sm:py-3 sm:px-4">
                 Features
               </TabsTrigger>
             </TabsList>
-            <TabsContent value="overview" className="mt-8 space-y-8">
+            <TabsContent value="overview" className="mt-6 sm:mt-8 space-y-6 sm:space-y-8">
               <div className="prose max-w-none">
-                <p className="text-gray-600 leading-relaxed">
+                <p className="text-sm sm:text-base text-gray-600 leading-relaxed">
                   {carData.description || `This ${carData.year} ${carData.make} ${carData.model} is in ${carData.condition} condition 
                   with ${carData.mileage.toLocaleString()} miles. Located in ${carData.location}.`}
                 </p>
               </div>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-                <div className="flex items-center gap-3 p-4 bg-gray-50 rounded-lg">
-                  <Calendar className="h-6 w-6 text-primary" />
-                  <div>
-                    <p className="text-sm text-gray-500">Year</p>
-                    <p className="font-semibold">{carData.year}</p>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-6">
+                <div className="flex items-center gap-3 p-3 sm:p-4 bg-gray-50 rounded-lg">
+                  <Calendar className="h-5 w-5 sm:h-6 sm:w-6 text-primary flex-shrink-0" />
+                  <div className="min-w-0">
+                    <p className="text-xs sm:text-sm text-gray-500">Year</p>
+                    <p className="font-semibold text-sm sm:text-base">{carData.year}</p>
                   </div>
                 </div>
-                <div className="flex items-center gap-3 p-4 bg-gray-50 rounded-lg">
-                  <Gauge className="h-6 w-6 text-primary" />
-                  <div>
-                    <p className="text-sm text-gray-500">Mileage</p>
-                    <p className="font-semibold">{carData.mileage.toLocaleString()} mi</p>
+                <div className="flex items-center gap-3 p-3 sm:p-4 bg-gray-50 rounded-lg">
+                  <Gauge className="h-5 w-5 sm:h-6 sm:w-6 text-primary flex-shrink-0" />
+                  <div className="min-w-0">
+                    <p className="text-xs sm:text-sm text-gray-500">Mileage</p>
+                    <p className="font-semibold text-sm sm:text-base">{carData.mileage.toLocaleString()} mi</p>
                   </div>
                 </div>
-                <div className="flex items-center gap-3 p-4 bg-gray-50 rounded-lg">
-                  <div className="h-6 w-6 text-primary flex items-center justify-center">
-                    <span className="text-lg font-bold">C</span>
+                <div className="flex items-center gap-3 p-3 sm:p-4 bg-gray-50 rounded-lg">
+                  <div className="h-5 w-5 sm:h-6 sm:w-6 text-primary flex items-center justify-center flex-shrink-0">
+                    <span className="text-base sm:text-lg font-bold">C</span>
                   </div>
-                  <div>
-                    <p className="text-sm text-gray-500">Condition</p>
-                    <p className="font-semibold capitalize">{carData.condition}</p>
+                  <div className="min-w-0">
+                    <p className="text-xs sm:text-sm text-gray-500">Condition</p>
+                    <p className="font-semibold text-sm sm:text-base capitalize">{carData.condition}</p>
                   </div>
                 </div>
                 {carData.fuelType ? (
@@ -529,25 +530,25 @@ export default function CarDetails({ id }: CarDetailsProps) {
         </div>
 
         {/* Right Column - Price and Contact */}
-        <div className="space-y-8">
+        <div className="space-y-6 sm:space-y-8">
           {/* Price Card */}
-          <div className="bg-white rounded-xl border shadow-sm p-8 space-y-6 sticky top-8">
-            <div className="flex justify-between items-center">
-              <h2 className="text-4xl font-bold">${carData.price.toLocaleString()}</h2>
+          <div className="bg-white rounded-xl border shadow-sm p-4 sm:p-6 lg:p-8 space-y-4 sm:space-y-6 sticky top-4 lg:top-8">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+              <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold">${carData.price.toLocaleString()}</h2>
               <Badge 
                 variant={carData.condition === "new" ? "default" : "secondary"}
-                className="text-sm px-3 py-1"
+                className="text-xs sm:text-sm px-2 sm:px-3 py-1"
               >
                 {carData.condition}
               </Badge>
             </div>
-            <div className="space-y-3">
-              <Button className="w-full h-12 text-lg" size="lg" onClick={handleContact}>
-                <Phone className="mr-2 h-5 w-5" />
+            <div className="space-y-2 sm:space-y-3">
+              <Button className="w-full h-10 sm:h-12 text-sm sm:text-lg" size="lg" onClick={handleContact}>
+                <Phone className="mr-2 h-4 w-4 sm:h-5 sm:w-5" />
                 Contact Seller
               </Button>
-              <Button variant="outline" className="w-full h-12 text-lg" size="lg">
-                <MessageSquare className="mr-2 h-5 w-5" />
+              <Button variant="outline" className="w-full h-10 sm:h-12 text-sm sm:text-lg" size="lg">
+                <MessageSquare className="mr-2 h-4 w-4 sm:h-5 sm:w-5" />
                 Send Message
               </Button>
             </div>
@@ -555,47 +556,47 @@ export default function CarDetails({ id }: CarDetailsProps) {
 
           {/* Seller Card */}
           {carData.user && (
-            <div className="bg-white rounded-xl border shadow-sm p-8 space-y-6">
-              <div className="flex items-center gap-4">
-                <div className="h-14 w-14 rounded-full bg-primary/10 flex items-center justify-center">
-                  <Users className="h-7 w-7 text-primary" />
+            <div className="bg-white rounded-xl border shadow-sm p-4 sm:p-6 lg:p-8 space-y-4 sm:space-y-6">
+              <div className="flex items-center gap-3 sm:gap-4">
+                <div className="h-12 w-12 sm:h-14 sm:w-14 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+                  <Users className="h-6 w-6 sm:h-7 sm:w-7 text-primary" />
                 </div>
-                <div>
-                  <h3 className="font-semibold text-lg">{carData.user.name}</h3>
+                <div className="min-w-0 flex-1">
+                  <h3 className="font-semibold text-base sm:text-lg truncate">{carData.user.name}</h3>
                   <div className="flex items-center gap-2">
                     <div className="flex items-center">
                       {[...Array(5)].map((_, i) => (
                         <Star
                           key={i}
-                          className={`h-4 w-4 ${
+                          className={`h-3 w-3 sm:h-4 sm:w-4 ${
                             i < 4 ? "fill-yellow-400 text-yellow-400" : "text-gray-300"
                           }`}
                         />
                       ))}
                     </div>
-                    <span className="text-sm text-gray-600">(Reviews coming soon)</span>
+                    <span className="text-xs sm:text-sm text-gray-600">(Reviews coming soon)</span>
                   </div>
                 </div>
               </div>
-              <div className="space-y-3 text-sm text-gray-600">
+              <div className="space-y-2 sm:space-y-3 text-xs sm:text-sm text-gray-600">
                 <div className="flex items-center gap-2">
-                  <Shield className="h-4 w-4" />
+                  <Shield className="h-3 w-3 sm:h-4 sm:w-4" />
                   <span>Verified Seller</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <Calendar className="h-4 w-4" />
+                  <Calendar className="h-3 w-3 sm:h-4 sm:w-4" />
                   <span>Member since {new Date(carData.user.createdAt).getFullYear()}</span>
                 </div>
               </div>
-              <div className="pt-4 space-y-3">
-                <Button variant="outline" className="w-full" size="sm">
-                  <Mail className="mr-2 h-4 w-4" />
-                  {carData.user.email}
+              <div className="pt-3 sm:pt-4 space-y-2 sm:space-y-3">
+                <Button variant="outline" className="w-full text-xs sm:text-sm" size="sm">
+                  <Mail className="mr-2 h-3 w-3 sm:h-4 sm:w-4" />
+                  <span className="truncate">{carData.user.email}</span>
                 </Button>
                 {carData.user.phone && (
-                  <Button variant="outline" className="w-full" size="sm">
-                    <Phone className="mr-2 h-4 w-4" />
-                    {carData.user.phone}
+                  <Button variant="outline" className="w-full text-xs sm:text-sm" size="sm">
+                    <Phone className="mr-2 h-3 w-3 sm:h-4 sm:w-4" />
+                    <span className="truncate">{carData.user.phone}</span>
                   </Button>
                 )}
               </div>

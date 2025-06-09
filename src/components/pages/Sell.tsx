@@ -225,13 +225,45 @@ export default function Sell() {
     setErrors(prev => ({ ...prev, [name]: error }));
   };
 
-  // Calculate completion progress
+  // Calculate completion progress with step-based weighting
+  const [stepCompletions, setStepCompletions] = useState({
+    step1: 0,
+    step2: 0,
+    step3: 0,
+    step4: 0
+  });
+
   useEffect(() => {
-    const requiredFields = ['make', 'model', 'year', 'price', 'mileage', 'condition', 'description', 'location'];
-    const filledFields = requiredFields.filter(field => formData[field as keyof typeof formData]);
-    const imageScore = imagePreviews.length > 0 ? 1 : 0;
-    const progress = ((filledFields.length + imageScore) / (requiredFields.length + 1)) * 100;
-    setCompletionProgress(progress);
+    let progress = 0;
+    
+    // Step 1: Basic Info (40% of total)
+    const step1Fields = ['make', 'model', 'year', 'price', 'mileage', 'condition', 'description', 'location'];
+    const step1Filled = step1Fields.filter(field => formData[field as keyof typeof formData]);
+    const step1Progress = (step1Filled.length / step1Fields.length) * 40;
+    
+    // Step 2: Specifications (20% of total)
+    const step2Fields = ['transmission', 'fuelType', 'engine', 'drivetrain'];
+    const step2Filled = step2Fields.filter(field => formData[field as keyof typeof formData]);
+    const step2Progress = (step2Filled.length / step2Fields.length) * 20;
+    
+    // Step 3: Features & Photos (30% of total)
+    const imageScore = imagePreviews.length > 0 ? 15 : 0;
+    const featuresScore = formData.features.length > 0 ? 15 : 0;
+    const step3Progress = imageScore + featuresScore;
+    
+    // Step 4: Review (10% of total) - automatically completed when other steps are done
+    const step4Progress = (step1Progress + step2Progress + step3Progress >= 90) ? 10 : 0;
+    
+    progress = step1Progress + step2Progress + step3Progress + step4Progress;
+    setCompletionProgress(Math.min(progress, 100));
+    
+    // Update individual step completions for visual feedback
+    setStepCompletions({
+      step1: Math.min((step1Filled.length / step1Fields.length) * 100, 100),
+      step2: Math.min((step2Filled.length / step2Fields.length) * 100, 100),
+      step3: Math.min(((imageScore + featuresScore) / 30) * 100, 100),
+      step4: step4Progress > 0 ? 100 : 0
+    });
   }, [formData, imagePreviews]);
 
   // Fetch unique makes
@@ -522,10 +554,10 @@ export default function Sell() {
 
   // Handle step navigation with validation
   const handleStepChange = (newStep: number) => {
+    let canProceed = true;
+    
     if (newStep > currentStep) {
       // Validate current step before moving forward
-      let canProceed = true;
-      
       if (currentStep === 1) {
         const step1Fields = ['make', 'model', 'year', 'price', 'mileage', 'condition', 'description', 'location'];
         const step1Errors: FormErrors = {};
@@ -560,7 +592,10 @@ export default function Sell() {
       }
     }
     
+    // Always allow navigation if validation passed or moving backward
     setCurrentStep(newStep);
+    // Scroll to top when changing steps
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   useEffect(() => {
@@ -591,34 +626,71 @@ export default function Sell() {
   }
 
   return (
-    <div className="container max-w-7xl mx-auto py-8 px-4">
+    <div className="container max-w-7xl mx-auto py-4 sm:py-6 lg:py-8 px-4 sm:px-6 lg:px-8">
       {/* Header */}
-      <div className="flex items-center justify-between mb-8">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-6 sm:mb-8 gap-4">
         <div>
-          <h1 className="text-4xl font-bold text-gray-900 mb-2">Sell Your Car</h1>
-          <p className="text-gray-500">List your vehicle with our comprehensive selling platform</p>
+          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 mb-2">Sell Your Car</h1>
+          <p className="text-sm sm:text-base text-gray-500">List your vehicle with our comprehensive selling platform</p>
         </div>
         <div className="flex items-center gap-3">
-          <Badge variant="outline" className="px-3 py-2 bg-green-50 text-green-700 border-green-200">
-            <Clock className="w-4 h-4 mr-2" />
+          <Badge variant="outline" className="px-2 sm:px-3 py-1 sm:py-2 bg-green-50 text-green-700 border-green-200 text-xs sm:text-sm">
+            <Clock className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
             {Math.round(completionProgress)}% Complete
           </Badge>
         </div>
       </div>
 
       {/* Progress Indicator */}
-      <Card className="mb-8">
-        <CardContent className="p-6">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-semibold">Listing Progress</h3>
-            <span className="text-sm text-gray-500">{Math.round(completionProgress)}% Complete</span>
+      <Card className="mb-6 sm:mb-8">
+        <CardContent className="p-4 sm:p-6">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-3 sm:mb-4 gap-2">
+            <h3 className="text-base sm:text-lg font-semibold">Listing Progress</h3>
+            <span className="text-xs sm:text-sm text-gray-500">{Math.round(completionProgress)}% Complete</span>
           </div>
-          <Progress value={completionProgress} className="h-2 mb-4" />
-          <div className="grid grid-cols-4 gap-4">
+          <Progress value={completionProgress} className="h-2 sm:h-3 mb-4 sm:mb-6" />
+          
+          {/* Mobile: Horizontal scroll steps */}
+          <div className="block sm:hidden">
+            <div className="flex gap-2 overflow-x-auto pb-2">
+              {steps.map((step) => (
+                <div
+                  key={step.id}
+                  className={`flex-shrink-0 flex flex-col items-center gap-2 p-3 rounded-lg transition-all duration-200 cursor-pointer min-w-[80px] ${
+                    currentStep === step.id
+                      ? 'bg-blue-50 border border-blue-200'
+                      : currentStep > step.id
+                      ? 'bg-green-50 border border-green-200'
+                      : 'bg-gray-50 border border-gray-200'
+                  }`}
+                  onClick={() => handleStepChange(step.id)}
+                >
+                  <div className="flex items-center justify-center">
+                    {currentStep > step.id ? (
+                      <CheckCircle className="w-5 h-5 text-green-600" />
+                    ) : (
+                      <step.icon className={`w-5 h-5 ${
+                        currentStep === step.id
+                          ? 'text-blue-600'
+                          : 'text-gray-400'
+                      }`} />
+                    )}
+                  </div>
+                  <div className="text-center">
+                    <p className="text-xs font-medium">{step.title}</p>
+                    <p className="text-xs text-gray-500 hidden">{step.description}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+          
+          {/* Desktop: Grid layout */}
+          <div className="hidden sm:grid sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
             {steps.map((step) => (
               <div
                 key={step.id}
-                className={`flex items-center gap-3 p-3 rounded-lg transition-all duration-200 cursor-pointer ${
+                className={`flex items-center gap-3 p-3 sm:p-4 rounded-lg transition-all duration-200 cursor-pointer ${
                   currentStep === step.id
                     ? 'bg-blue-50 border border-blue-200'
                     : currentStep > step.id
@@ -627,16 +699,20 @@ export default function Sell() {
                 }`}
                 onClick={() => handleStepChange(step.id)}
               >
-                <step.icon className={`w-5 h-5 ${
-                  currentStep === step.id
-                    ? 'text-blue-600'
-                    : currentStep > step.id
-                    ? 'text-green-600'
-                    : 'text-gray-400'
-                }`} />
-                <div>
-                  <p className="text-sm font-medium">{step.title}</p>
-                  <p className="text-xs text-gray-500">{step.description}</p>
+                <div className="flex-shrink-0">
+                  {currentStep > step.id ? (
+                    <CheckCircle className="w-5 h-5 text-green-600" />
+                  ) : (
+                    <step.icon className={`w-5 h-5 ${
+                      currentStep === step.id
+                        ? 'text-blue-600'
+                        : 'text-gray-400'
+                    }`} />
+                  )}
+                </div>
+                <div className="min-w-0 flex-1">
+                  <p className="text-sm font-medium truncate">{step.title}</p>
+                  <p className="text-xs text-gray-500 truncate">{step.description}</p>
                 </div>
               </div>
             ))}
@@ -645,10 +721,10 @@ export default function Sell() {
       </Card>
 
       {/* Warning Alert */}
-      <Alert variant="destructive" className="mb-6">
-        <AlertTriangle className="h-4 w-4" />
-        <AlertTitle>Safety Notice</AlertTitle>
-        <AlertDescription>
+      <Alert variant="destructive" className="mb-4 sm:mb-6">
+        <AlertTriangle className="h-4 w-4 flex-shrink-0" />
+        <AlertTitle className="text-sm sm:text-base">Safety Notice</AlertTitle>
+        <AlertDescription className="text-xs sm:text-sm">
           Please be cautious when selling your car. Never share sensitive information or accept payments outside of our platform. 
           We recommend meeting in a safe, public location and verifying the buyer&apos;s identity.
         </AlertDescription>
@@ -672,15 +748,21 @@ export default function Sell() {
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-6">
             <Tabs value={`step-${currentStep}`} onValueChange={(value) => handleStepChange(parseInt(value.split('-')[1]))}>
-              <TabsList className="grid w-full grid-cols-4 bg-gray-100/50 rounded-lg">
+              <TabsList className="grid w-full grid-cols-4 bg-gray-100/50 rounded-lg p-1">
                 {steps.map((step) => (
                   <TabsTrigger
                     key={step.id}
                     value={`step-${step.id}`}
-                    className="data-[state=active]:bg-white data-[state=active]:shadow-sm transition-all flex items-center gap-2"
+                    className="data-[state=active]:bg-white data-[state=active]:shadow-sm transition-all flex items-center gap-1 sm:gap-2 text-xs sm:text-sm py-2 px-2 sm:px-3"
+                    disabled={step.id > 1 && currentStep < step.id - 1}
                   >
-                    <step.icon className="w-4 h-4" />
+                    {currentStep > step.id ? (
+                      <CheckCircle className="w-3 h-3 sm:w-4 sm:h-4 text-green-600" />
+                    ) : (
+                      <step.icon className="w-3 h-3 sm:w-4 sm:h-4" />
+                    )}
                     <span className="hidden sm:inline">{step.title}</span>
+                    <span className="sm:hidden text-xs">{step.id}</span>
                   </TabsTrigger>
                 ))}
               </TabsList>

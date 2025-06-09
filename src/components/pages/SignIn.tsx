@@ -92,23 +92,23 @@ export default function SignIn() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 p-4">
-      <div className="w-full max-w-md">
+    <div className="min-h-screen flex items-center justify-center bg-gray-50 p-4 sm:p-6 lg:p-8">
+      <div className="w-full max-w-sm sm:max-w-md">
 
         <Card className="shadow-xl border-gray-200">
-          <CardHeader className="border-b border-gray-100 bg-white pb-6">
+          <CardHeader className="border-b border-gray-100 bg-white pb-4 sm:pb-6 px-4 sm:px-6">
             <div className="space-y-1.5 flex flex-col items-center">
               <div className="bg-blue-100 text-blue-700 p-3 rounded-full mb-2">
                 <Lock className="h-6 w-6" />
               </div>
-              <h1 className="text-2xl font-bold text-gray-900">Welcome Back</h1>
-              <p className="text-gray-500 text-center">
+              <h1 className="text-xl sm:text-2xl font-bold text-gray-900">Welcome Back</h1>
+              <p className="text-sm sm:text-base text-gray-500 text-center">
                 Sign in to your account to continue
               </p>
             </div>
           </CardHeader>
 
-          <CardContent className="px-6 bg-white">
+          <CardContent className="px-4 sm:px-6 bg-white">
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
               <div className="space-y-2">
                 <Label htmlFor="email" className="text-gray-700">Email Address</Label>
@@ -129,7 +129,7 @@ export default function SignIn() {
                   <Label htmlFor="password" className="text-gray-700">Password</Label>
                   <Link
                     href="/forgot-password"
-                    className="text-sm text-blue-600 hover:underline">
+                    className="text-xs sm:text-sm text-blue-600 hover:underline">
                     Forgot Password?
                   </Link>
                 </div>
@@ -178,10 +178,10 @@ export default function SignIn() {
                 </div>
               </div>
 
-              <div className="grid grid-cols-3 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 <Button
                   variant="outline"
-                  className="h-10 border-gray-300 hover:bg-gray-50"
+                  className="h-9 sm:h-10 border-gray-300 hover:bg-gray-50 text-sm"
                   disabled={loading}
                   onClick={async () => {
                     await signIn.social(
