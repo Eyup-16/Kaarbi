@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Car, Tag, MapPin, Calendar, Edit, Trash2, Gauge, Plus, Search, Eye, TrendingUp, Clock, CheckCircle, XCircle, LoaderCircle, AlertTriangle } from "lucide-react";
+import { Car, Tag, MapPin, Calendar, Edit, Trash2, Gauge, Plus, Search, Eye, TrendingUp, Clock, CheckCircle, XCircle, LoaderCircle, AlertTriangle, X } from "lucide-react";
 import { toast } from "sonner";
 import Link from "next/link";
 import Image from "next/image";
@@ -448,151 +448,283 @@ export default function Mycars() {
   return (
     <div className="container max-w-7xl mx-auto px-3 sm:px-4 py-4 sm:py-8">
       {/* Header */}
-      <div className="flex flex-col gap-4 mb-6 sm:mb-8">
-        <div className="text-center sm:text-left">
-          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 mb-2">My Car Listings</h1>
-          <p className="text-gray-500 text-sm sm:text-base">Manage and track your vehicle sales</p>
-        </div>
-        <div className="flex flex-col sm:flex-row items-center gap-3 justify-center sm:justify-start">
-          <Badge variant="outline" className="px-3 py-2 bg-blue-50 text-blue-700 border-blue-200 text-sm">
-            <Car className="w-4 h-4 mr-2" />
-            {stats.total} Total Listings
-          </Badge>
-          {!isAdminRole && (
-            <Link href="/sell" className="w-full sm:w-auto">
-              <Button className="bg-blue-600 hover:bg-blue-700 px-6 w-full sm:w-auto">
-                <Plus className="w-4 h-4 mr-2" />
-                Add New Car
-              </Button>
-            </Link>
-          )}
+      <div className="relative mb-8 sm:mb-12">
+        {/* Background decoration */}
+        <div className="absolute inset-0 bg-gradient-to-r from-blue-50 via-indigo-50 to-purple-50 rounded-2xl -z-10 opacity-50"></div>
+        
+        <div className="relative p-6 sm:p-8">
+          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
+            <div className="text-center lg:text-left">
+              <div className="flex items-center gap-3 justify-center lg:justify-start mb-3">
+                <div className="p-2 bg-blue-100 rounded-xl">
+                  <Car className="w-6 h-6 text-blue-600" />
+                </div>
+                <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold bg-gradient-to-r from-gray-900 via-blue-800 to-indigo-800 bg-clip-text text-transparent">
+                  My Car Listings
+                </h1>
+              </div>
+              <p className="text-gray-600 text-base sm:text-lg max-w-2xl mx-auto lg:mx-0">
+                Manage and track your vehicle sales with our comprehensive dashboard
+              </p>
+            </div>
+            
+            <div className="flex flex-col sm:flex-row items-center gap-4 justify-center lg:justify-end">
+              <div className="flex items-center gap-2 px-4 py-2 bg-white rounded-xl shadow-sm border border-gray-100">
+                <div className="p-1.5 bg-blue-50 rounded-lg">
+                  <Car className="w-4 h-4 text-blue-600" />
+                </div>
+                <div className="text-center sm:text-left">
+                  <p className="text-sm font-medium text-gray-900">{stats.total}</p>
+                  <p className="text-xs text-gray-500">Total Listings</p>
+                </div>
+              </div>
+              
+              {!isAdminRole && (
+                <Link href="/sell" className="w-full sm:w-auto">
+                  <Button className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white shadow-lg hover:shadow-xl transition-all duration-300 px-8 py-3 rounded-xl w-full sm:w-auto transform hover:scale-105">
+                    <Plus className="w-5 h-5 mr-2" />
+                    Add New Car
+                  </Button>
+                </Link>
+              )}
+            </div>
+          </div>
         </div>
       </div>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-6 sm:mb-8">
-        <Card className="p-4 sm:p-6 hover:shadow-lg transition-all duration-300">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-xs sm:text-sm font-medium text-gray-600">Active Listings</p>
-              <p className="text-2xl sm:text-3xl font-bold text-green-600">{stats.active}</p>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-8 sm:mb-12">
+        <Card className="group relative overflow-hidden border-0 shadow-lg hover:shadow-xl transition-all duration-500 hover:scale-105 bg-gradient-to-br from-green-50 to-emerald-50">
+          <div className="absolute inset-0 bg-gradient-to-br from-green-400/5 to-emerald-400/5"></div>
+          <div className="relative p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-green-700 mb-1">Active Listings</p>
+                <p className="text-3xl font-bold text-green-800">{stats.active}</p>
+                <p className="text-xs text-green-600 mt-1">Ready for buyers</p>
+              </div>
+              <div className="p-3 bg-green-100 rounded-2xl group-hover:scale-110 transition-transform duration-300">
+                <CheckCircle className="w-8 h-8 text-green-600" />
+              </div>
             </div>
-            <CheckCircle className="w-8 h-8 sm:w-12 sm:h-12 text-green-600 bg-green-50 p-1 sm:p-2 rounded-lg" />
           </div>
         </Card>
         
-        <Card className="p-4 sm:p-6 hover:shadow-lg transition-all duration-300">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-xs sm:text-sm font-medium text-gray-600">Pending Approval</p>
-              <p className="text-2xl sm:text-3xl font-bold text-yellow-600">{stats.pending}</p>
+        <Card className="group relative overflow-hidden border-0 shadow-lg hover:shadow-xl transition-all duration-500 hover:scale-105 bg-gradient-to-br from-yellow-50 to-amber-50">
+          <div className="absolute inset-0 bg-gradient-to-br from-yellow-400/5 to-amber-400/5"></div>
+          <div className="relative p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-yellow-700 mb-1">Pending Approval</p>
+                <p className="text-3xl font-bold text-yellow-800">{stats.pending}</p>
+                <p className="text-xs text-yellow-600 mt-1">Under review</p>
+              </div>
+              <div className="p-3 bg-yellow-100 rounded-2xl group-hover:scale-110 transition-transform duration-300">
+                <Clock className="w-8 h-8 text-yellow-600" />
+              </div>
             </div>
-            <Clock className="w-8 h-8 sm:w-12 sm:h-12 text-yellow-600 bg-yellow-50 p-1 sm:p-2 rounded-lg" />
           </div>
         </Card>
         
-        <Card className="p-4 sm:p-6 hover:shadow-lg transition-all duration-300">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-xs sm:text-sm font-medium text-gray-600">Cars Sold</p>
-              <p className="text-2xl sm:text-3xl font-bold text-blue-600">{stats.sold}</p>
+        <Card className="group relative overflow-hidden border-0 shadow-lg hover:shadow-xl transition-all duration-500 hover:scale-105 bg-gradient-to-br from-blue-50 to-indigo-50">
+          <div className="absolute inset-0 bg-gradient-to-br from-blue-400/5 to-indigo-400/5"></div>
+          <div className="relative p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-blue-700 mb-1">Cars Sold</p>
+                <p className="text-3xl font-bold text-blue-800">{stats.sold}</p>
+                <p className="text-xs text-blue-600 mt-1">Successfully sold</p>
+              </div>
+              <div className="p-3 bg-blue-100 rounded-2xl group-hover:scale-110 transition-transform duration-300">
+                <TrendingUp className="w-8 h-8 text-blue-600" />
+              </div>
             </div>
-            <TrendingUp className="w-8 h-8 sm:w-12 sm:h-12 text-blue-600 bg-blue-50 p-1 sm:p-2 rounded-lg" />
           </div>
         </Card>
         
-        <Card className="p-4 sm:p-6 hover:shadow-lg transition-all duration-300">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-xs sm:text-sm font-medium text-gray-600">Total Value</p>
-              <p className="text-xl sm:text-2xl font-bold text-purple-600">${stats.totalValue.toLocaleString()}</p>
+        <Card className="group relative overflow-hidden border-0 shadow-lg hover:shadow-xl transition-all duration-500 hover:scale-105 bg-gradient-to-br from-purple-50 to-violet-50">
+          <div className="absolute inset-0 bg-gradient-to-br from-purple-400/5 to-violet-400/5"></div>
+          <div className="relative p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-purple-700 mb-1">Total Value</p>
+                <p className="text-2xl font-bold text-purple-800">${stats.totalValue.toLocaleString()}</p>
+                <p className="text-xs text-purple-600 mt-1">Portfolio worth</p>
+              </div>
+              <div className="p-3 bg-purple-100 rounded-2xl group-hover:scale-110 transition-transform duration-300">
+                <Tag className="w-8 h-8 text-purple-600" />
+              </div>
             </div>
-            <Tag className="w-8 h-8 sm:w-12 sm:h-12 text-purple-600 bg-purple-50 p-1 sm:p-2 rounded-lg" />
           </div>
         </Card>
       </div>
 
       {/* Filters and Search */}
-      <Card className="p-4 sm:p-6 mb-6 sm:mb-8 shadow-lg">
-        <div className="flex flex-col gap-4">
-          <div className="relative w-full">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-            <Input
-              placeholder="Search cars by make, model, or location..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-10 text-sm"
-            />
+      <Card className="relative overflow-hidden border-0 shadow-xl bg-gradient-to-r from-white to-gray-50 mb-8 sm:mb-12">
+        <div className="absolute inset-0 bg-gradient-to-r from-blue-500/5 to-purple-500/5"></div>
+        <div className="relative p-6 sm:p-8">
+          <div className="flex items-center gap-3 mb-6">
+            <div className="p-2 bg-blue-100 rounded-xl">
+              <Search className="w-5 h-5 text-blue-600" />
+            </div>
+            <h3 className="text-xl font-semibold text-gray-900">Search & Filter</h3>
+            <div className="flex-1 h-px bg-gradient-to-r from-blue-200 to-transparent"></div>
           </div>
-          <div className="flex flex-col sm:flex-row gap-3">
-            <Select value={sortBy} onValueChange={setSortBy}>
-              <SelectTrigger className="w-full sm:w-48">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="newest">Newest First</SelectItem>
-                <SelectItem value="oldest">Oldest First</SelectItem>
-                <SelectItem value="price-high">Price: High to Low</SelectItem>
-                <SelectItem value="price-low">Price: Low to High</SelectItem>
-                <SelectItem value="mileage-low">Mileage: Low to High</SelectItem>
-                <SelectItem value="mileage-high">Mileage: High to Low</SelectItem>
-              </SelectContent>
-            </Select>
-            <Select value={filterCondition} onValueChange={setFilterCondition}>
-              <SelectTrigger className="w-full sm:w-40">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Conditions</SelectItem>
-                <SelectItem value="excellent">Excellent</SelectItem>
-                <SelectItem value="good">Good</SelectItem>
-                <SelectItem value="fair">Fair</SelectItem>
-                <SelectItem value="poor">Poor</SelectItem>
-              </SelectContent>
-            </Select>
+          
+          <div className="space-y-6">
+            <div className="relative">
+              <div className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400">
+                <Search className="w-5 h-5" />
+              </div>
+              <Input
+                placeholder="Search cars by make, model, location, or any keyword..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="pl-12 pr-4 py-4 text-base border-2 border-gray-200 rounded-xl focus:border-blue-500 focus:ring-4 focus:ring-blue-100 transition-all duration-300 bg-white/80 backdrop-blur-sm"
+              />
+              {searchQuery && (
+                <button
+                  onClick={() => setSearchQuery("")}
+                  className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              )}
+            </div>
+            
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-gray-700 flex items-center gap-2">
+                  <TrendingUp className="w-4 h-4" />
+                  Sort by
+                </label>
+                <Select value={sortBy} onValueChange={setSortBy}>
+                  <SelectTrigger className="w-full h-12 border-2 border-gray-200 rounded-xl focus:border-blue-500 focus:ring-4 focus:ring-blue-100 transition-all duration-300 bg-white/80 backdrop-blur-sm">
+                    <SelectValue placeholder="Choose sorting option" />
+                  </SelectTrigger>
+                  <SelectContent className="rounded-xl border-2 border-gray-100 shadow-xl">
+                    <SelectItem value="newest" className="rounded-lg">🆕 Newest First</SelectItem>
+                    <SelectItem value="oldest" className="rounded-lg">⏰ Oldest First</SelectItem>
+                    <SelectItem value="price-high" className="rounded-lg">💰 Price: High to Low</SelectItem>
+                    <SelectItem value="price-low" className="rounded-lg">💲 Price: Low to High</SelectItem>
+                    <SelectItem value="mileage-low" className="rounded-lg">🚗 Mileage: Low to High</SelectItem>
+                    <SelectItem value="mileage-high" className="rounded-lg">🛣️ Mileage: High to Low</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-gray-700 flex items-center gap-2">
+                  <CheckCircle className="w-4 h-4" />
+                  Condition
+                </label>
+                <Select value={filterCondition} onValueChange={setFilterCondition}>
+                  <SelectTrigger className="w-full h-12 border-2 border-gray-200 rounded-xl focus:border-blue-500 focus:ring-4 focus:ring-blue-100 transition-all duration-300 bg-white/80 backdrop-blur-sm">
+                    <SelectValue placeholder="Filter by condition" />
+                  </SelectTrigger>
+                  <SelectContent className="rounded-xl border-2 border-gray-100 shadow-xl">
+                    <SelectItem value="all" className="rounded-lg">🎯 All Conditions</SelectItem>
+                    <SelectItem value="excellent" className="rounded-lg">⭐ Excellent</SelectItem>
+                    <SelectItem value="good" className="rounded-lg">✅ Good</SelectItem>
+                    <SelectItem value="fair" className="rounded-lg">⚖️ Fair</SelectItem>
+                    <SelectItem value="poor" className="rounded-lg">⚠️ Poor</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+            
+            {(searchQuery || filterCondition !== "all") && (
+              <div className="flex flex-wrap items-center gap-2 pt-2">
+                <span className="text-sm text-gray-600">Active filters:</span>
+                {searchQuery && (
+                  <Badge variant="secondary" className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full">
+                    Search: &quot;{searchQuery}&quot;
+                    <button onClick={() => setSearchQuery("")} className="ml-2 hover:text-blue-900">
+                      <X className="w-3 h-3" />
+                    </button>
+                  </Badge>
+                )}
+                {filterCondition !== "all" && (
+                  <Badge variant="secondary" className="px-3 py-1 bg-green-100 text-green-800 rounded-full">
+                    Condition: {filterCondition}
+                    <button onClick={() => setFilterCondition("all")} className="ml-2 hover:text-green-900">
+                      <X className="w-3 h-3" />
+                    </button>
+                  </Badge>
+                )}
+              </div>
+            )}
           </div>
         </div>
       </Card>
 
       {/* Main Content */}
-      <Card className="shadow-lg">
+      <Card className="relative overflow-hidden border-0 shadow-2xl bg-gradient-to-br from-white to-gray-50">
+        <div className="absolute inset-0 bg-gradient-to-br from-blue-500/3 to-purple-500/3"></div>
         <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as 'PENDING' | 'ACTIVE' | 'SOLD')}>
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between p-4 sm:p-6 pb-0 gap-4">
-            <div className="overflow-x-auto">
-              <TabsList className="bg-gray-100 w-full sm:w-auto">
-                <TabsTrigger value="PENDING" className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm px-2 sm:px-3">
-                  <Clock className="w-3 h-3 sm:w-4 sm:h-4" />
-                  <span className="hidden xs:inline">Pending</span>
-                  <span className="xs:hidden">P</span>
-                  <span>({stats.pending})</span>
-                </TabsTrigger>
-                <TabsTrigger value="ACTIVE" className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm px-2 sm:px-3">
-                  <CheckCircle className="w-3 h-3 sm:w-4 sm:h-4" />
-                  <span className="hidden xs:inline">Active</span>
-                  <span className="xs:hidden">A</span>
-                  <span>({stats.active})</span>
-                </TabsTrigger>
-                <TabsTrigger value="SOLD" className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm px-2 sm:px-3">
-                  <XCircle className="w-3 h-3 sm:w-4 sm:h-4" />
-                  <span className="hidden xs:inline">Sold</span>
-                  <span className="xs:hidden">S</span>
-                  <span>({stats.sold})</span>
-                </TabsTrigger>
-              </TabsList>
+          <div className="relative flex flex-col lg:flex-row lg:items-center justify-between p-6 sm:p-8 pb-0 gap-6">
+            <div className="flex items-center gap-4">
+              <div className="p-2 bg-gradient-to-r from-blue-100 to-indigo-100 rounded-xl">
+                <Car className="w-6 h-6 text-blue-600" />
+              </div>
+              <div>
+                <h3 className="text-xl font-semibold text-gray-900">Your Listings</h3>
+                <p className="text-sm text-gray-600">Browse and manage your car listings</p>
+              </div>
             </div>
             
-            <Button 
-              onClick={fetchCars} 
-              variant="outline" 
-              size="sm"
-              disabled={isLoading}
-              className="flex items-center gap-2 text-xs sm:text-sm w-full sm:w-auto"
-            >
-              <LoaderCircle className={`w-3 h-3 sm:w-4 sm:h-4 ${isLoading ? 'animate-spin' : 'hidden'}`} />
-              <Eye className={`w-3 h-3 sm:w-4 sm:h-4 ${isLoading ? 'hidden' : ''}`} />
-              <span className="hidden sm:inline">Refresh</span>
-              <span className="sm:hidden">⟳</span>
-            </Button>
+            <div className="flex flex-col sm:flex-row items-center gap-4">
+              <div className="overflow-x-auto w-full sm:w-auto">
+                <TabsList className="bg-white border-2 border-gray-100 shadow-lg rounded-xl p-1 w-full sm:w-auto">
+                  <TabsTrigger 
+                    value="PENDING" 
+                    className="flex items-center gap-2 text-sm px-4 py-2 rounded-lg transition-all duration-300 data-[state=active]:bg-gradient-to-r data-[state=active]:from-yellow-500 data-[state=active]:to-amber-500 data-[state=active]:text-white data-[state=active]:shadow-lg"
+                  >
+                    <Clock className="w-4 h-4" />
+                    <span className="hidden sm:inline">Pending</span>
+                    <span className="sm:hidden">P</span>
+                    <Badge variant="secondary" className="ml-1 bg-white/20 text-current border-0">
+                      {stats.pending}
+                    </Badge>
+                  </TabsTrigger>
+                  <TabsTrigger 
+                    value="ACTIVE" 
+                    className="flex items-center gap-2 text-sm px-4 py-2 rounded-lg transition-all duration-300 data-[state=active]:bg-gradient-to-r data-[state=active]:from-green-500 data-[state=active]:to-emerald-500 data-[state=active]:text-white data-[state=active]:shadow-lg"
+                  >
+                    <CheckCircle className="w-4 h-4" />
+                    <span className="hidden sm:inline">Active</span>
+                    <span className="sm:hidden">A</span>
+                    <Badge variant="secondary" className="ml-1 bg-white/20 text-current border-0">
+                      {stats.active}
+                    </Badge>
+                  </TabsTrigger>
+                  <TabsTrigger 
+                    value="SOLD" 
+                    className="flex items-center gap-2 text-sm px-4 py-2 rounded-lg transition-all duration-300 data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-indigo-500 data-[state=active]:text-white data-[state=active]:shadow-lg"
+                  >
+                    <XCircle className="w-4 h-4" />
+                    <span className="hidden sm:inline">Sold</span>
+                    <span className="sm:hidden">S</span>
+                    <Badge variant="secondary" className="ml-1 bg-white/20 text-current border-0">
+                      {stats.sold}
+                    </Badge>
+                  </TabsTrigger>
+                </TabsList>
+              </div>
+              
+              <Button 
+                onClick={fetchCars} 
+                variant="outline" 
+                size="sm"
+                disabled={isLoading}
+                className="flex items-center gap-2 text-sm px-6 py-2 rounded-xl border-2 border-gray-200 hover:border-blue-300 hover:bg-blue-50 transition-all duration-300 bg-white/80 backdrop-blur-sm w-full sm:w-auto"
+              >
+                <LoaderCircle className={`w-4 h-4 ${isLoading ? 'animate-spin' : 'hidden'}`} />
+                <Eye className={`w-4 h-4 ${isLoading ? 'hidden' : ''}`} />
+                <span className="hidden sm:inline">Refresh</span>
+                <span className="sm:hidden">⟳</span>
+              </Button>
+            </div>
           </div>
 
           <div className="p-4 sm:p-6">

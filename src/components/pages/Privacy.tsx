@@ -59,7 +59,7 @@ export default function PrivacyPolicy() {
           <section id="introduction">
             <h2 className="text-2xl font-semibold mb-4">1. Introduction</h2>
             <p className="mb-4">
-              Welcome to Kaarbi's Privacy Policy. This comprehensive document outlines how we collect, use, disclose, and safeguard your information when you use our platform. We are committed to protecting your privacy and ensuring you have a positive experience on our website.
+              Welcome to Kaarbi&apos;s Privacy Policy. This comprehensive document outlines how we collect, use, disclose, and safeguard your information when you use our platform. We are committed to protecting your privacy and ensuring you have a positive experience on our website.
             </p>
             <p className="mb-4">
               This policy applies to all information collected through our website, mobile applications, and any related services, sales, marketing, or events. Please read this privacy policy carefully as it will help you make informed decisions about sharing your personal information with us.
@@ -171,7 +171,7 @@ export default function PrivacyPolicy() {
           </section>
 
           <section id="children">
-            <h2 className="text-2xl font-semibold mb-4">9. Children's Privacy</h2>
+            <h2 className="text-2xl font-semibold mb-4">9. Children&apos;s Privacy</h2>
             <p className="mb-4">
               Our services are not intended for use by children under the age of 13. We do not knowingly collect personal information from children under 13. If you are a parent or guardian and believe your child has provided us with personal information, please contact us.
             </p>
@@ -187,7 +187,7 @@ export default function PrivacyPolicy() {
           <section id="changes">
             <h2 className="text-2xl font-semibold mb-4">11. Changes to This Policy</h2>
             <p className="mb-4">
-              We may update this privacy policy from time to time. We will notify you of any changes by posting the new privacy policy on this page and updating the "Last Updated" date. We encourage you to review this privacy policy periodically.
+              We may update this privacy policy from time to time. We will notify you of any changes by posting the new privacy policy on this page and updating the Last Updated date. We encourage you to review this privacy policy periodically.
             </p>
           </section>
 
@@ -198,8 +198,8 @@ export default function PrivacyPolicy() {
             </p>
             <div className="bg-gray-50 p-4 rounded-lg">
               <p className="mb-2">Email: privacy@kaarbi.com</p>
-              <p className="mb-2">Address: [Your Company Address]</p>
-              <p>Phone: [Your Contact Number]</p>
+              <p className="mb-2">Address: 511 Monroe St, Detroit, MI 48226</p>
+              <p>Phone: +213(563)881-020</p>
             </div>
           </section>
         </div>

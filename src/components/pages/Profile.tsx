@@ -124,24 +124,21 @@ export default function ProfileEnhanced() {
           const response = await fetch("/api/user/profile");
           if (response.ok) {
             const data = await response.json();
-            setUserData(prev => ({
-              ...prev,
+            const updatedUserData = {
+              name: session.user.name || "",
+              email: session.user.email || "",
+              image: session.user.image || "",
               phone: data.phone || "",
               company: data.company || "",
               bio: data.bio || "",
               location: data.location || "",
               website: data.website || ""
-            }));
+            };
+            
+            setUserData(updatedUserData);
             
             // Calculate profile stats
-            const completeness = calculateProfileCompleteness({
-              ...userData,
-              phone: data.phone || "",
-              company: data.company || "",
-              bio: data.bio || "",
-              location: data.location || "",
-              website: data.website || ""
-            });
+            const completeness = calculateProfileCompleteness(updatedUserData);
             
             setProfileStats(prev => ({
               ...prev,
@@ -158,7 +155,7 @@ export default function ProfileEnhanced() {
 
       fetchUserData();
     }
-  }, [session,userData]);
+  }, [session]);
 
   useEffect(() => {
     const fetchConnectedAccounts = async () => {
