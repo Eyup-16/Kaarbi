@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
+import {LoaderCircle} from 'lucide-react'
 
 interface DatabaseStats {
   userStats: {
@@ -71,7 +72,11 @@ export default function DatabaseManagement() {
   };
 
   if (loading) {
-    return <div className="p-6">Loading database statistics...</div>;
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <LoaderCircle className="w-8 h-8 animate-spin text-gray-600" />
+      </div>
+    )
   }
 
   if (!stats) {

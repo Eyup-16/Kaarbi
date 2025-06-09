@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
+import {LoaderCircle} from 'lucide-react'
 
 interface User {
   id: string;
@@ -73,7 +74,11 @@ export default function AdminUserManagement() {
   };
 
   if (loading) {
-    return <div className="p-6">Loading users...</div>;
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <LoaderCircle className="w-8 h-8 animate-spin text-gray-600" />
+      </div>
+    )
   }
 
   return (
